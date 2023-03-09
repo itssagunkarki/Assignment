@@ -17,7 +17,6 @@ public class Person {
 	 * @param emails
 	 */
 	public Person(String personCode, String lastName, String firstName, Address address, List<String> emails) {
-		super();
 		PersonCode = personCode;
 		this.lastName = lastName;
 		this.firstName = firstName;

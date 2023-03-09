@@ -15,7 +15,6 @@ public class Address {
 	 * @param country
 	 */
 	public Address(String street, String city, String state, String zip, String country) {
-		super();
 		this.street = street;
 		this.city = city;
 		this.state = state;

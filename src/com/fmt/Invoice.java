@@ -17,7 +17,6 @@ public class Invoice {
 	 * @param date
 	 */
 	public Invoice(String invoiceCode, Store store, Person customer, Person salesPerson, LocalDate date) {
-		super();
 		this.invoiceCode = invoiceCode;
 		this.store = store;
 		this.customer = customer;

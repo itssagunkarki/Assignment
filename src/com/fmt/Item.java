@@ -11,7 +11,6 @@ public class Item {
 	 * @param itemName
 	 */
 	public Item(String itemCode, String itemType, String itemName) {
-		super();
 		this.itemCode = itemCode;
 		this.itemType = itemType;
 		this.itemName = itemName;

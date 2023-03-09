@@ -11,7 +11,6 @@ public class Store {
 	 * @param storeAddress
 	 */
 	public Store(String storeCode, Person managerCode, Address storeAddress) {
-		super();
 		this.storeCode = storeCode;
 		this.managerCode = managerCode;
 		this.storeAddress = storeAddress;
