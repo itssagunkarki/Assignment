@@ -1,0 +1,25 @@
++-------------------------------------------------------------------------+
+| Sales by Customer                                                       |
++-------------------------------------------------------------------------+
+Sale       Store      Customer             Salesperson          Total     
+INV002     73668b     Leavold, Wit         Halse, Farand        $   9475.38
+INV003     9f352c     Leavold, Wit         Witherbed, Denny     $      0.00
+INV001     3c0234     Quarry, Staci        Halse, Farand        $ 133439.37
+INV004     3c0234     Stammers, Bernadette Soloway, Keslie      $  11174.15
++-------------------------------------------------------------------------+
+| Sales by Total                                                          |
++-------------------------------------------------------------------------+
+Sale       Store      Customer             Salesperson          Total     
+INV001     3c0234     Quarry, Staci        Halse, Farand        $ 133439.37
+INV004     3c0234     Stammers, Bernadette Soloway, Keslie      $  11174.15
+INV002     73668b     Leavold, Wit         Halse, Farand        $   9475.38
+INV003     9f352c     Leavold, Wit         Witherbed, Denny     $      0.00
++-------------------------------------------------------------------------+
+| Sales by Store                                                          |
++-------------------------------------------------------------------------+
+Sale       Store      Customer             Salesperson          Total     
+INV001     3c0234     Quarry, Staci        Halse, Farand        $ 133439.37
+INV004     3c0234     Stammers, Bernadette Soloway, Keslie      $  11174.15
+INV002     73668b     Leavold, Wit         Halse, Farand        $   9475.38
+INV003     9f352c     Leavold, Wit         Witherbed, Denny     $      0.00
+

@@ -1,0 +1,49 @@
++----------------------------------------------------------------------------------------+
+| Summary Report - By Total                                                              |
++----------------------------------------------------------------------------------------+
+Invoice #  Store      Customer                       Num Items          Tax       Total
+INV001     bekea     Gertrud, Kilshaw                  3          $    11067.7     $ 173867.7
+INV002     bekea     Gertrud, Kilshaw                   3          $    1344.97    $  21003.98
+INV003     zjniw     Deppe, Fairfax                   1          $    500.00    $   20500.00
++----------------------------------------------------------------------------------------+
+                                                     7         $   12912.67 $ 215371.68
+
++----------------------------------------------------------------+
+| Store Sales Summary Report                                     |
++----------------------------------------------------------------+
+Store      Manager                        # Sales    Grand Total    
+bekea     Ronalda, Bakeup                   3         $      173867.7
+9f352c     Ruspine, Inna                   4         $      41505.98
++----------------------------------------------------------------+
+                                          7          $ 215371.68
+
+Invoice  #INV001
+Store    #bekea
+Date      2022-12-15
+Customer: 
+Quarry, Staci (urs8c : [elugsdino@rediff.com ])
+	252 Corben Drive,Omaha
+        New Hampshire,61293,US
+
+Sales Person: 
+Brittani, Romero (8197d3 : [kshurylk@apache.org ])
+	8516 Sutteridge Point
+        LA,Nevada,56717,US
+
+Item                                                               Total
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-                          -=-=-=-=-=-
+1d4d89          (Purchase) Tractor-MegaTract 150HP 
+                                                             $  85000.00
+n43k2l3         (Service)              Plowing 
+	3.5 hours @ $1000.00/hr
+                                                             $   3500.00
+n3453js         (Product) Fertilizer           
+	158 @ $10.25/liter
+                                                             $   1619.50
+3506f6          (Lease)  Backhoe-BidDoug X25 
+	365 days (2022-01-01 -> 2022-12-31) @ $3500.00/ 30 days
+                                                             $  42583.33
+                                                             -=-=-=-=-=-
+                                                    Subtotal $ 173867.7
+                                                         Tax $   11067.7
+                                                 Grand Total $ 173867.7
