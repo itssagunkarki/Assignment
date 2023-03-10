@@ -1,6 +1,6 @@
 package com.fmt;
 
-public class Item {
+public abstract class Item {
 	private String itemCode;
 	private String itemType;
 	private String itemName;
@@ -20,11 +20,17 @@ public class Item {
 		return itemCode;
 	}
 
-	public String getItemTypeChar() {
+	public String getItemType() {
 		return itemType;
 	}
 
 	public String getItemName() {
 		return itemName;
 	}
+
+	public abstract Double getTotalPrice();
+
+	public abstract Double getTaxes();
+
+	public abstract Double getPrice();
 }

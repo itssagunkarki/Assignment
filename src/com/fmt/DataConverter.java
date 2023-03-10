@@ -79,7 +79,7 @@ public class DataConverter {
 		savePersonsXML();
 		saveStoresJSON();
 		saveStoresXML();
-		saveItemsJSON();
-		saveItemsXML();
+//		saveItemsJSON();
+//		saveItemsXML();
 	}
 }

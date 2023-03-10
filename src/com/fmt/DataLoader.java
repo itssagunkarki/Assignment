@@ -1,6 +1,7 @@
 package com.fmt;
 
 import java.io.File;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,6 +11,8 @@ public class DataLoader {
 	public static final String FILE_PATH_PERSONS = "data/Persons.csv";
 	public static final String FILE_PATH_ITEMS = "data/Items.csv";
 	public static final String FILE_PATH_STORES = "data/Stores.csv";
+	public static final String FILE_PATH_INVOICE = "data/Invoices.csv";
+	public static final String FILE_PATH_INVOICE_ITEMS = "data/InvoiceItems.csv";
 
 	/**
 	 * It loads Person.csv converts it into its class and returns a list of person
@@ -141,6 +144,65 @@ public class DataLoader {
 			throw new RuntimeException("Encountered Error on line " + line, e);
 		}
 		return result;
+	}
 
+	public static HashMap<String, List<Item>> loadInvoice() {
+		HashMap<String, List<Item>> result = new HashMap<String, List<Item>>();
+		String line = null;
+		try (Scanner s = new Scanner(new File(FILE_PATH_INVOICE_ITEMS))) {
+			int numRecords = Integer.parseInt(s.nextLine());
+			for (int i = 0; i < numRecords; i++) {
+				line = s.nextLine();
+				if (!line.trim().isEmpty()) {
+					String token[] = line.split(",", -1);
+					String invoiceCode = token[0];
+					String itemCode = token[1];
+				
+					if (result.get(invoiceCode) == null) {
+						List<Item> invoiceItems = new ArrayList<Item>();
+						result.put(invoiceCode, invoiceItems);
+					}
+
+					String PurchaseOrLease = token[2];
+					if (SearchIdCode.searchItem(itemCode).getItemType().equals("E")) {
+						
+						Equipment equipment = null;
+						
+						if (PurchaseOrLease.equals("P")) {
+							equipment = new Equipment((Equipment) SearchIdCode.searchItem(itemCode),
+									Double.parseDouble(token[3]));
+
+						} else if (PurchaseOrLease.equals("L")) {
+							Double leasePrice = Double.parseDouble(token[3]);
+							LocalDate startDate = LocalDate.parse(token[4]);
+							LocalDate endDate = LocalDate.parse(token[5]);
+							equipment = new Equipment((Equipment) SearchIdCode.searchItem(itemCode), leasePrice,
+									startDate, endDate);
+
+						}
+						result.get(invoiceCode).add(equipment);
+
+					} else if (SearchIdCode.searchItem(itemCode).getItemType().equals("P")) {
+
+						Product product = null;
+						Double quantity = Double.parseDouble(token[2]);
+						product = new Product((Product) SearchIdCode.searchItem(itemCode), quantity);
+						result.get(invoiceCode).add(product);
+
+					} else if (SearchIdCode.searchItem(itemCode).getItemType().equals("S")) {
+						Service service = null;
+						Double numHours = Double.parseDouble(token[2]);
+						service = new Service((Service) SearchIdCode.searchItem(itemCode), numHours);
+						result.get(invoiceCode).add(service);
+					}
+
+				}
+
+			}
+
+		} catch (Exception e) {
+			throw new RuntimeException("Encountered Error on line " + line, e);
+		}
+		return result;
 	}
 }
