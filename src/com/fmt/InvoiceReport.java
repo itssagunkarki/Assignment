@@ -1,10 +1,8 @@
 package com.fmt;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
 
 public class InvoiceReport {
 	private static HashMap<String, Invoice> invoiceWithItems() {
