@@ -1,6 +1,7 @@
 package com.fmt;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -24,12 +25,8 @@ public class InvoiceReport {
 		Double totalTax = 0.0;
 		Double totalTotal = 0.0;
 
-		for (String i : invoices.keySet()) {
-
-			totalItems += invoices.get(i).getInvoiceItems().size();
-			totalTax += invoices.get(i).getTotalInvoiceTaxes();
-			totalTotal += invoices.get(i).getTotalInvoicePrice();
-		}
+		List<Invoice> sortedInvoices = new ArrayList<>(invoices.values());
+		Collections.sort(sortedInvoices, (i1, i2) -> i2.getTotalInvoicePrice().compareTo(i1.getTotalInvoicePrice()));
 
 		System.out.println(
 				"+-------------------------------------------------------------------------------------------");
@@ -40,8 +37,10 @@ public class InvoiceReport {
 		System.out
 				.println("Invoice #  Store        Customer                          Num Items       Tax        Total");
 
-		for (String key : invoices.keySet()) {
-			Invoice i = invoices.get(key);
+		for (Invoice i : sortedInvoices) {
+			totalItems += i.getInvoiceItems().size();
+			totalTax += i.getTotalInvoiceTaxes();
+			totalTotal += i.getTotalInvoicePrice();
 
 			System.out.printf("| %-10s| %-9s| %-31s| %-10s| $%8.2f| $%10.2f|\n", i.getInvoiceCode(),
 					i.getStore().getStoreCode(), i.getCustomer().getLastName() + ", " + i.getCustomer().getFirstName(),
@@ -51,7 +50,6 @@ public class InvoiceReport {
 		System.out.println(
 				"+-------------------------------------------------------------------------------------------+");
 		System.out.printf("%60d          $%.2f   $ %.2f\n\n", totalItems, totalTax, totalTotal);
-
 	}
 
 	private static HashMap<String, List<Invoice>> groupInvoicesByStore() {
@@ -143,7 +141,8 @@ public class InvoiceReport {
 									"%s				(lease) %s %s				\n \t\t 365(%s -> %s) @$%.2f / 30 days\n"
 											+ "									$%.2f\n",
 									equipment.getItemCode(), equipment.getItemName(), equipment.getModel(),
-									equipment.getStartDate().toString(), equipment.getEndDate().toString(), equipment.getLeasePrice(), equipment.getPrice());
+									equipment.getStartDate().toString(), equipment.getEndDate().toString(),
+									equipment.getLeasePrice(), equipment.getPrice());
 
 						}
 					} else if (items.get(i).getItemType().equals("P")) {

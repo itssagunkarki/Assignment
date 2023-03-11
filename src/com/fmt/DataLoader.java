@@ -151,6 +151,7 @@ public class DataLoader {
 		
 		String line = null;
 		try (Scanner s = new Scanner(new File(FILE_PATH_INVOICE))) {
+
 			int numRecords = Integer.parseInt(s.nextLine());
 			Invoice invoice = null;
 			for (int i = 0; i < numRecords; i++) {
@@ -158,6 +159,7 @@ public class DataLoader {
 				if (!line.trim().isEmpty()) {
 					String token[] = line.split(",", -1);
 					String invoiceCode = token[0];
+
 					Store store = SearchIdCode.searchStore(token[1]);
 					Person customer = SearchIdCode.searchPerson(token[2]);
 					Person salesPerson = SearchIdCode.searchPerson(token[3]);
@@ -188,7 +190,7 @@ public class DataLoader {
 					String token[] = line.split(",", -1);
 					String invoiceCode = token[0];
 					String itemCode = token[1];
-					
+		
 					if(result.get(invoiceCode)==null) {
 						result.put(invoiceCode, new ArrayList<Item>());
 					}
