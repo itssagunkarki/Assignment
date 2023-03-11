@@ -1,9 +1,5 @@
 package com.fmt;
 
-import java.io.BufferedOutputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -184,20 +180,11 @@ public class InvoiceReport {
 	
 
 	public static void main(String[] args) {
-		try {
-            FileOutputStream fos = new FileOutputStream("data/output.txt");
-            PrintStream ps = new PrintStream(fos);
-            System.setOut(ps);
-
+	
             reportByTotal();
             salesReport();
             getReportPerInvoice();
 
-            ps.close();
-            fos.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
 
 	}
