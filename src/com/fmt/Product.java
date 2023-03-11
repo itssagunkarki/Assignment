@@ -33,22 +33,15 @@ public class Product extends Item {
 		return unitPrice;
 	}
 
-	@Override
-	public Double getTotalPrice() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	@Override
 	public Double getTaxes() {
-		// TODO Auto-generated method stub
-		return null;
+		return roundToCent(getPrice() * (7.15/100));
 	}
 
 	@Override
 	public Double getPrice() {
-		// TODO Auto-generated method stub
-		return null;
+		return unitPrice * quantity;
 	}
 
 	public Double getQuantity() {

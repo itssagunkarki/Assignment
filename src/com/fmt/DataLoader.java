@@ -145,10 +145,41 @@ public class DataLoader {
 		}
 		return result;
 	}
+	
+	public static HashMap<String, Invoice> loadInvoice() {
+		HashMap<String, Invoice> result = new HashMap<String, Invoice>();
+		
+		String line = null;
+		try (Scanner s = new Scanner(new File(FILE_PATH_INVOICE))) {
+			int numRecords = Integer.parseInt(s.nextLine());
+			Invoice invoice = null;
+			for (int i = 0; i < numRecords; i++) {
+				line = s.nextLine();
+				if (!line.trim().isEmpty()) {
+					String token[] = line.split(",", -1);
+					String invoiceCode = token[0];
+					Store store = SearchIdCode.searchStore(token[1]);
+					Person customer = SearchIdCode.searchPerson(token[2]);
+					Person salesPerson = SearchIdCode.searchPerson(token[3]);
+					LocalDate date = LocalDate.parse(token[4]);
+					
+					
+					invoice = new Invoice(invoiceCode, store, customer, salesPerson, date, new ArrayList<Item>());
+					result.put(invoiceCode, invoice);
+				}
+				
+			}
+			
+		} catch (Exception e) {
+			throw new RuntimeException("Encountered Error on line " + line, e);
+		}
+		return result;
+	}
 
-	public static HashMap<String, List<Item>> loadInvoice() {
+	public static HashMap<String, List<Item>> loadInvoiceItems() {
 		HashMap<String, List<Item>> result = new HashMap<String, List<Item>>();
 		String line = null;
+
 		try (Scanner s = new Scanner(new File(FILE_PATH_INVOICE_ITEMS))) {
 			int numRecords = Integer.parseInt(s.nextLine());
 			for (int i = 0; i < numRecords; i++) {
@@ -157,11 +188,11 @@ public class DataLoader {
 					String token[] = line.split(",", -1);
 					String invoiceCode = token[0];
 					String itemCode = token[1];
-				
-					if (result.get(invoiceCode) == null) {
-						List<Item> invoiceItems = new ArrayList<Item>();
-						result.put(invoiceCode, invoiceItems);
+					
+					if(result.get(invoiceCode)==null) {
+						result.put(invoiceCode, new ArrayList<Item>());
 					}
+				
 
 					String PurchaseOrLease = token[2];
 					if (SearchIdCode.searchItem(itemCode).getItemType().equals("E")) {
@@ -170,32 +201,31 @@ public class DataLoader {
 						
 						if (PurchaseOrLease.equals("P")) {
 							equipment = new Equipment((Equipment) SearchIdCode.searchItem(itemCode),
-									Double.parseDouble(token[3]));
+									Double.parseDouble(token[3]), "P");
+							result.get(invoiceCode).add(equipment);
 
 						} else if (PurchaseOrLease.equals("L")) {
 							Double leasePrice = Double.parseDouble(token[3]);
 							LocalDate startDate = LocalDate.parse(token[4]);
 							LocalDate endDate = LocalDate.parse(token[5]);
 							equipment = new Equipment((Equipment) SearchIdCode.searchItem(itemCode), leasePrice,
-									startDate, endDate);
-
+									startDate, endDate, "L");
+							result.get(invoiceCode).add(equipment);
 						}
-						result.get(invoiceCode).add(equipment);
+						
 
 					} else if (SearchIdCode.searchItem(itemCode).getItemType().equals("P")) {
 
-						Product product = null;
 						Double quantity = Double.parseDouble(token[2]);
-						product = new Product((Product) SearchIdCode.searchItem(itemCode), quantity);
+						Product product = new Product((Product) SearchIdCode.searchItem(itemCode), quantity);
 						result.get(invoiceCode).add(product);
 
 					} else if (SearchIdCode.searchItem(itemCode).getItemType().equals("S")) {
-						Service service = null;
+						
 						Double numHours = Double.parseDouble(token[2]);
-						service = new Service((Service) SearchIdCode.searchItem(itemCode), numHours);
+						Service service = new Service((Service) SearchIdCode.searchItem(itemCode), numHours);
 						result.get(invoiceCode).add(service);
 					}
-
 				}
 
 			}
@@ -205,4 +235,6 @@ public class DataLoader {
 		}
 		return result;
 	}
+	
+	
 }

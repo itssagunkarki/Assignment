@@ -75,11 +75,11 @@ public class DataConverter {
 	}
 
 	public static void main(String[] args) {
-		savePersonsJSON();
 		savePersonsXML();
-		saveStoresJSON();
+		savePersonsJSON();
 		saveStoresXML();
+		saveStoresJSON();
+		saveItemsXML();
 //		saveItemsJSON();
-//		saveItemsXML();
 	}
 }

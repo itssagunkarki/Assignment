@@ -28,7 +28,13 @@ public abstract class Item {
 		return itemName;
 	}
 
-	public abstract Double getTotalPrice();
+	public Double roundToCent(Double num) {
+		return Math.round(num * 100) / 100.0;
+	}
+
+	public Double getTotalPrice() {
+		return roundToCent(getPrice() + getTaxes());
+	}
 
 	public abstract Double getTaxes();
 

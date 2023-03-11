@@ -15,5 +15,10 @@ public class SearchIdCode {
 		HashMap<String, Item> persons = DataLoader.loadItems();
 		return persons.get(itemId);
 	}
+	
+	public static Invoice searchInvoice(String invoiceId) {
+		HashMap<String, Invoice> invoice = DataLoader.loadInvoice();
+		return invoice.get(invoiceId);
+	}
 
 }

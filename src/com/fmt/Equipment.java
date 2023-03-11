@@ -1,6 +1,7 @@
 package com.fmt;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 
 public class Equipment extends Item {
 	private String model;
@@ -9,6 +10,7 @@ public class Equipment extends Item {
 	private Double leasePrice;
 	private LocalDate startDate;
 	private LocalDate endDate;
+	private String purchaseOrLease;
 
 	/**
 	 * @param itemCode
@@ -21,26 +23,25 @@ public class Equipment extends Item {
 		this.model = model;
 	}
 
-	public Equipment(Equipment equipment, Double purchasePrice) {
+	public Equipment(Equipment equipment, Double purchasePrice, String purchaseOrLease) {
 		super(equipment.getItemCode(), equipment.getItemType(), equipment.getItemName());
 		this.model = equipment.getModel();
 		this.purchasePrice = purchasePrice;
+		this.purchaseOrLease = purchaseOrLease;
 	}
 
-	public Equipment(Equipment equipment, Double leasePrice, LocalDate startDate, LocalDate endDate) {
+	public Equipment(Equipment equipment, Double leasePrice, LocalDate startDate, LocalDate endDate,
+			String purchaseOrLease) {
 		super(equipment.getItemCode(), equipment.getItemType(), equipment.getItemName());
 		this.model = equipment.getModel();
 		this.leasePrice = leasePrice;
 		this.startDate = startDate;
 		this.endDate = endDate;
+		this.purchaseOrLease = purchaseOrLease;
 	}
 
 	public String getModel() {
 		return model;
-	}
-
-	public Double getLeaseOrPurchase() {
-		return purchasePrice;
 	}
 
 	public Double getLeasePrice() {
@@ -55,22 +56,39 @@ public class Equipment extends Item {
 		return endDate;
 	}
 
-	@Override
-	public Double getPrice() {
-		return 0.0;
-	}
-
-	@Override
-	public Double getTotalPrice() {
-		// TODO Auto-generated method stub
-		return null;
+	public String getPurchaseOrLease() {
+		return purchaseOrLease;
 	}
 
 	@Override
 	public Double getTaxes() {
-		// TODO Auto-generated method stub
-		return null;
+		double tax = 0;
+		double price = getPrice();
+		if (purchaseOrLease.equals("P")) {
+			tax += 0;
+		} else if (purchaseOrLease.equals("L")) {
+			if (price < 10000) {
+				tax += 0;
+			} else if ((price >= 10000) && (price < 100000)) {
+				tax += 500;
+			} else {
+				tax += 1500;
+			}
+		}
+		return tax;
 	}
 
+	@Override
+	public Double getPrice() {
+		double price = 0.0;
+		if (purchaseOrLease.equals("P")) {
+			price += purchasePrice;
+		} else if (purchaseOrLease.equals("L")) {
+
+			long daysBetween = ChronoUnit.DAYS.between(startDate, endDate);
+			price = roundToCent((daysBetween + 1) * leasePrice / 30);
+		}
+		return price;
+	}
 
 }
