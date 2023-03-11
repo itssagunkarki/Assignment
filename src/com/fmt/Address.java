@@ -42,4 +42,13 @@ public class Address {
 		return country;
 	}
 
+	public String getFormattedAddress() {
+
+		StringBuilder sb = new StringBuilder();
+		sb.append("\t").append(street).append("\n\t");
+		sb.append(city).append(", ").append(state).append(" ").append(zip).append(" ").append(country);
+		return sb.toString();
+
+	}
+
 }

@@ -1,12 +1,10 @@
 package com.fmt;
 
-import java.util.List;
 
 public class Store {
 	private String storeCode;
 	private Person managerCode;
 	private Address storeAddress;
-	private List<Invoice> invoices;
 
 	/**
 	 * @param storeCode
@@ -30,9 +28,4 @@ public class Store {
 	public Address getStoreAddress() {
 		return storeAddress;
 	}
-
-	public void addInvoices(Invoice invoice) {
-		invoices.add(invoice);
-	}
-
 }
