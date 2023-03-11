@@ -163,7 +163,7 @@ public class InvoiceReport {
 								+ "                                             			Tax $    %-70.2f\n"
 								+ "                                          		Grand Total $   %-70.2f\n\n",
 						invoices.get(s).getInvoicePrice(), invoices.get(s).getTotalInvoiceTaxes(),
-						invoices.get(s).getTotalInvoiceTaxes());
+						invoices.get(s).getTotalInvoicePrice());
 			} else {
 				System.out.printf("                                                          		-=-=-=-=-=-\n"
 						+ "                                           		      Subtotal $  0\n"
