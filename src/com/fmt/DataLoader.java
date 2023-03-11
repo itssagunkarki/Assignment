@@ -15,8 +15,8 @@ public class DataLoader {
 	public static final String FILE_PATH_INVOICE_ITEMS = "data/InvoiceItems.csv";
 
 	/**
-	 * It loads Person.csv converts it into its class and returns a list of person
-	 * classes.
+	 * It loads Person.csv converts it into its class and returns a hashmap of
+	 * person classes.
 	 * 
 	 * @return HashMap
 	 */
@@ -64,10 +64,10 @@ public class DataLoader {
 	}
 
 	/**
-	 * It loads Stores.csv converts it into its class and returns a list of Store
+	 * It loads Stores.csv converts it into its class and returns a hashmap of Store
 	 * classes.
 	 * 
-	 * @return ArrayList
+	 * @return HashMap
 	 */
 
 	public static HashMap<String, Store> loadStores() {
@@ -105,7 +105,7 @@ public class DataLoader {
 	}
 
 	/**
-	 * It loads Items.csv converts it into its class and returns a list of Item
+	 * It loads Items.csv converts it into its class and returns a hashmap of Item
 	 * classes.
 	 * 
 	 * @return HashMap
@@ -145,10 +145,16 @@ public class DataLoader {
 		}
 		return result;
 	}
-	
-	public static HashMap<String, Invoice> loadInvoice() {
+
+	/**
+	 * It loads invoice data and and returns a hashmap of invoices
+	 * 
+	 * @return
+	 */
+
+	private static HashMap<String, Invoice> loadWithoutItems() {
 		HashMap<String, Invoice> result = new HashMap<String, Invoice>();
-		
+
 		String line = null;
 		try (Scanner s = new Scanner(new File(FILE_PATH_INVOICE))) {
 
@@ -164,21 +170,26 @@ public class DataLoader {
 					Person customer = SearchIdCode.searchPerson(token[2]);
 					Person salesPerson = SearchIdCode.searchPerson(token[3]);
 					LocalDate date = LocalDate.parse(token[4]);
-					
-					
+
 					invoice = new Invoice(invoiceCode, store, customer, salesPerson, date, new ArrayList<Item>());
 					result.put(invoiceCode, invoice);
 				}
-				
+
 			}
-			
+
 		} catch (Exception e) {
 			throw new RuntimeException("Encountered Error on line " + line, e);
 		}
 		return result;
 	}
+	
+	/** 
+	 * It loads Items of all the invoices and arranges them based on which invoice it is from
+	 * 
+	 * @param HashMap
+	 * */
 
-	public static HashMap<String, List<Item>> loadInvoiceItems() {
+	private static HashMap<String, List<Item>> loadInvoiceItems() {
 		HashMap<String, List<Item>> result = new HashMap<String, List<Item>>();
 		String line = null;
 
@@ -190,17 +201,17 @@ public class DataLoader {
 					String token[] = line.split(",", -1);
 					String invoiceCode = token[0];
 					String itemCode = token[1];
-		
-					if(result.get(invoiceCode)==null) {
+
+//					create an empty array list for hashmap if not exists
+					if (result.get(invoiceCode) == null) {
 						result.put(invoiceCode, new ArrayList<Item>());
 					}
-				
 
 					String PurchaseOrLease = token[2];
 					if (SearchIdCode.searchItem(itemCode).getItemType().equals("E")) {
-						
+
 						Equipment equipment = null;
-						
+
 						if (PurchaseOrLease.equals("P")) {
 							equipment = new Equipment((Equipment) SearchIdCode.searchItem(itemCode),
 									Double.parseDouble(token[3]), "P");
@@ -214,7 +225,6 @@ public class DataLoader {
 									startDate, endDate, "L");
 							result.get(invoiceCode).add(equipment);
 						}
-						
 
 					} else if (SearchIdCode.searchItem(itemCode).getItemType().equals("P")) {
 
@@ -223,7 +233,7 @@ public class DataLoader {
 						result.get(invoiceCode).add(product);
 
 					} else if (SearchIdCode.searchItem(itemCode).getItemType().equals("S")) {
-						
+
 						Double numHours = Double.parseDouble(token[2]);
 						Service service = new Service((Service) SearchIdCode.searchItem(itemCode), numHours);
 						result.get(invoiceCode).add(service);
@@ -237,6 +247,17 @@ public class DataLoader {
 		}
 		return result;
 	}
-	
-	
+
+	public static HashMap<String, Invoice> loadInvoice() {
+		HashMap<String, Invoice> invoices = loadWithoutItems();
+		HashMap<String, List<Item>> invoiceItems = loadInvoiceItems();
+
+		for (String i : invoiceItems.keySet()) {
+			for (Item item : invoiceItems.get(i)) {
+				invoices.get(i).addInvoiceItem(item);
+			}
+		}
+		return invoices;
+
+	}
 }

@@ -5,22 +5,18 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * 
+ * @author sagunkarki
+ *
+ */
+
 public class InvoiceReport {
-	private static HashMap<String, Invoice> invoiceWithItems() {
-		HashMap<String, Invoice> invoices = DataLoader.loadInvoice();
-		HashMap<String, List<Item>> invoiceItems = DataLoader.loadInvoiceItems();
-
-		for (String i : invoiceItems.keySet()) {
-			for (Item item : invoiceItems.get(i)) {
-				invoices.get(i).addInvoiceItem(item);
-			}
-		}
-		return invoices;
-
-	}
+	
+	
 
 	public static void reportByTotal() {
-		HashMap<String, Invoice> invoices = invoiceWithItems();
+		HashMap<String, Invoice> invoices = DataLoader.loadInvoice();
 		int totalItems = 0;
 		Double totalTax = 0.0;
 		Double totalTotal = 0.0;
@@ -56,7 +52,7 @@ public class InvoiceReport {
 		HashMap<String, List<Invoice>> result = new HashMap<String, List<Invoice>>();
 
 		HashMap<String, Store> store = DataLoader.loadStores();
-		HashMap<String, Invoice> invoices = invoiceWithItems();
+		HashMap<String, Invoice> invoices = DataLoader.loadInvoice();
 
 		for (String i : store.keySet()) {
 
@@ -108,7 +104,7 @@ public class InvoiceReport {
 	}
 
 	public static void getReportPerInvoice() {
-		HashMap<String, Invoice> invoices = invoiceWithItems();
+		HashMap<String, Invoice> invoices = DataLoader.loadInvoice();
 		for (String s : invoices.keySet()) {
 			System.out.println("Invoice #" + s);
 			System.out.println("Store\t#" + invoices.get(s).getStore().getStoreCode());
@@ -133,13 +129,13 @@ public class InvoiceReport {
 						if (equipment.getPurchaseOrLease().equals("P")) {
 							System.out.printf(
 									"%s				(Purchase) %s %s				\n"
-											+ "								$ %.2f\n",
+											+ "								$ %-70.2f\n",
 									equipment.getItemCode(), equipment.getItemName(), equipment.getModel(),
 									equipment.getPrice());
 						} else {
 							System.out.printf(
 									"%s				(lease) %s %s				\n \t\t 365(%s -> %s) @$%.2f / 30 days\n"
-											+ "									$%.2f\n",
+											+ "									$%-70.2f\n",
 									equipment.getItemCode(), equipment.getItemName(), equipment.getModel(),
 									equipment.getStartDate().toString(), equipment.getEndDate().toString(),
 									equipment.getLeasePrice(), equipment.getPrice());
@@ -149,43 +145,40 @@ public class InvoiceReport {
 						Product product = (Product) items.get(i);
 						System.out.printf(
 								"%s				(Product) %s 				\n \t \t \t %.0f @ %.2f/%s\n"
-										+ "									$%.2f\n",
+										+ "									$%-70.2f\n",
 								product.getItemCode(), product.getItemName(), product.getQuantity(),
 								product.getUnitPrice(), product.getUnit(), product.getPrice());
 					} else if (items.get(i).getItemType().equals("S")) {
 						Service service = (Service) items.get(i);
 						System.out.printf(
 								"%s				(Service) %s 				\n \t \t \t %.1fhrs @ %.2f/hr\n"
-										+ "									$%.2f\n",
+										+ "									$%-70.2f\n",
 								service.getItemCode(), service.getItemName(), service.getNumHours(),
 								service.getHourlyRate(), service.getPrice());
 					}
 				}
 				System.out.printf(
 						"                                                          		-=-=-=-=-=-\n"
-								+ "                                           		   Subtotal $   %.2f\n"
-								+ "                                             			 Tax $    %.2f\n"
-								+ "                                          		  Grand Total $   %.2f\n\n",
+								+ "                                           		   Subtotal $   %-70.2f\n"
+								+ "                                             			Tax $    %-70.2f\n"
+								+ "                                          		Grand Total $   %-70.2f\n\n",
 						invoices.get(s).getInvoicePrice(), invoices.get(s).getTotalInvoiceTaxes(),
 						invoices.get(s).getTotalInvoiceTaxes());
 			} else {
 				System.out.printf("                                                          		-=-=-=-=-=-\n"
-						+ "                                           		   Subtotal $   0\n"
-						+ "                                             			 Tax $    0\n"
-						+ "                                          		  Grand Total $   0\n\n");
+						+ "                                           		      Subtotal $  0\n"
+						+ "                                             		   	   Tax $  0\n"
+						+ "                                          		   Grand Total $  0\n\n");
 			}
 		}
 
 	}
-	
 
 	public static void main(String[] args) {
-	
-            reportByTotal();
-            salesReport();
-            getReportPerInvoice();
 
-
+		reportByTotal();
+		salesReport();
+		getReportPerInvoice();
 
 	}
 
