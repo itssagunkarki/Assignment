@@ -67,6 +67,13 @@ public class Invoice {
 		}
 		return totalPrice;
 	}
+	public Double getInvoicePrice() {
+		Double totalPrice = 0.0;
+		for (Item i: invoiceItems) {
+			totalPrice += i.getPrice();
+		}
+		return totalPrice;
+	}
 	
 	public void addInvoiceItem(Item item) {
 		invoiceItems.add(item);
