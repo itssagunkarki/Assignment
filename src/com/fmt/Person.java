@@ -43,5 +43,27 @@ public class Person {
 	public List<String> getEmails() {
 		return emails;
 	}
+	public String getName() {
+		return this.lastName + ", " + this.firstName;
+	}
+	public String getPersonDetails() {
+		String emailsString = "";
+		if (emails.size()>0) {
+			int Count = 0;
+			
+			for (int i = 0; i < (emails.size() - 1); i++) {
+				emailsString += emails.get(i) + ", ";
+				Count++;
+			}
+			emailsString += emails.get(Count);	
+		}
+		
+		String formattedStr = String.format("%s (%s : [%s]\n%s\n", getName(), getPersonCode(), emailsString, getAddress().getFormattedAddress());
+		return formattedStr;
+		
+		
+		
+		
+	}
 
 }

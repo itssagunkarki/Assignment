@@ -3,6 +3,7 @@ package com.fmt;
 public class Product extends Item {
 	private String unit;
 	private Double unitPrice;
+	private Double quantity;
 
 	/**
 	 * @param itemCode
@@ -16,6 +17,13 @@ public class Product extends Item {
 		this.unit = unit;
 		this.unitPrice = unitPrice;
 	}
+	
+	public Product(Product product, Double quantity) {
+	    super(product.getItemCode(), product.getItemType(), product.getItemName());
+	    this.unit = product.getUnit();
+	    this.unitPrice = product.getUnitPrice();
+	    this.quantity = quantity;
+	}
 
 	public String getUnit() {
 		return unit;
@@ -23,6 +31,21 @@ public class Product extends Item {
 
 	public Double getUnitPrice() {
 		return unitPrice;
+	}
+
+
+	@Override
+	public Double getTaxes() {
+		return roundToCent(getPrice() * (7.15/100));
+	}
+
+	@Override
+	public Double getPrice() {
+		return unitPrice * quantity;
+	}
+
+	public Double getQuantity() {
+		return quantity;
 	}
 
 }

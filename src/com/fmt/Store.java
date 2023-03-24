@@ -1,5 +1,6 @@
 package com.fmt;
 
+
 public class Store {
 	private String storeCode;
 	private Person managerCode;
@@ -23,8 +24,8 @@ public class Store {
 	public Person getManager() {
 		return managerCode;
 	}
+
 	public Address getStoreAddress() {
 		return storeAddress;
 	}
-
 }
