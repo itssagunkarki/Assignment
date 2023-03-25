@@ -12,8 +12,6 @@ import java.util.List;
  */
 
 public class InvoiceReport {
-	
-	
 
 	public static void reportByTotal() {
 		HashMap<String, Invoice> invoices = DataLoader.loadInvoice();
@@ -124,21 +122,25 @@ public class InvoiceReport {
 
 				for (int i = 0; i < items.size(); i++) {
 					if (items.get(i).getItemType().equals("E")) {
-						Equipment equipment = (Equipment) items.get(i);
+						Item equipment = (Item) items.get(i);
 						System.out.println(equipment.getItemCode());
-						if (equipment.getPurchaseOrLease().equals("P")) {
+						if (equipment instanceof PurchaseEquipment) {
+							PurchaseEquipment purchaseEquipment = (PurchaseEquipment) equipment;
 							System.out.printf(
 									"%s				(Purchase) %s %s				\n"
 											+ "								$ %-70.2f\n",
-									equipment.getItemCode(), equipment.getItemName(), equipment.getModel(),
-									equipment.getPrice());
-						} else {
+									purchaseEquipment.getItemCode(), purchaseEquipment.getItemName(),
+									purchaseEquipment.getModel(), purchaseEquipment.getPrice());
+						} else if (equipment instanceof LeaseEquipment) {
+							LeaseEquipment leaseEquipment = (LeaseEquipment) equipment;
+
 							System.out.printf(
 									"%s				(lease) %s %s				\n \t\t 365(%s -> %s) @$%.2f / 30 days\n"
 											+ "									$%-70.2f\n",
-									equipment.getItemCode(), equipment.getItemName(), equipment.getModel(),
-									equipment.getStartDate().toString(), equipment.getEndDate().toString(),
-									equipment.getLeasePrice(), equipment.getPrice());
+									leaseEquipment.getItemCode(), leaseEquipment.getItemName(),
+									leaseEquipment.getModel(), leaseEquipment.getStartDate().toString(),
+									leaseEquipment.getEndDate().toString(), leaseEquipment.getLeasePrice(),
+									leaseEquipment.getPrice());
 
 						}
 					} else if (items.get(i).getItemType().equals("P")) {
