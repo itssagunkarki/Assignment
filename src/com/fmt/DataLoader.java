@@ -182,12 +182,13 @@ public class DataLoader {
 		}
 		return result;
 	}
-	
-	/** 
-	 * It loads Items of all the invoices and arranges them based on which invoice it is from
+
+	/**
+	 * It loads Items of all the invoices and arranges them based on which invoice
+	 * it is from
 	 * 
 	 * @param HashMap
-	 * */
+	 */
 
 	private static HashMap<String, List<Item>> loadInvoiceItems() {
 		HashMap<String, List<Item>> result = new HashMap<String, List<Item>>();
@@ -213,16 +214,16 @@ public class DataLoader {
 						Equipment equipment = null;
 
 						if (PurchaseOrLease.equals("P")) {
-							equipment = new Equipment((Equipment) SearchIdCode.searchItem(itemCode),
-									Double.parseDouble(token[3]), "P");
+							equipment = new PurchaseEquipment((Equipment) SearchIdCode.searchItem(itemCode),
+									Double.parseDouble(token[3]));
 							result.get(invoiceCode).add(equipment);
 
 						} else if (PurchaseOrLease.equals("L")) {
 							Double leasePrice = Double.parseDouble(token[3]);
 							LocalDate startDate = LocalDate.parse(token[4]);
 							LocalDate endDate = LocalDate.parse(token[5]);
-							equipment = new Equipment((Equipment) SearchIdCode.searchItem(itemCode), leasePrice,
-									startDate, endDate, "L");
+							equipment = new LeaseEquipment((Equipment) SearchIdCode.searchItem(itemCode), leasePrice,
+									startDate, endDate);
 							result.get(invoiceCode).add(equipment);
 						}
 
