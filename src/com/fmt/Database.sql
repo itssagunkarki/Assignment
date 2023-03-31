@@ -75,10 +75,10 @@ create table PersonEmail (
 create table Store(
     storeId int not null primary key auto_increment,
     storeCode varchar(10) not null,
-    manager int not null,
+    managerId int not null,
     addressId int not null,
     foreign key (addressId) references Address(addressId),
-    foreign key (manager) references Person(personId),
+    foreign key (managerId) references Person(personId),
     index storeCode_idx (storeCode)
 );
 
@@ -246,7 +246,7 @@ values
     (10, 14);
 
 
-INSERT INTO Store (storeCode, manager, addressId)
+INSERT INTO Store (storeCode, managerId, addressId)
 VALUES
 ('S63J9N', 2, 2),
 ('S78P4D', 3, 3),
