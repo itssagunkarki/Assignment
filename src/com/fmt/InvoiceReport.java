@@ -83,7 +83,7 @@ public class InvoiceReport {
 		int totalSales = 0;
 		for (String storeCode : invoicesByStores.keySet()) {
 			List<Invoice> invoiceList = invoicesByStores.get(storeCode);
-			String managerName = SearchIdCode.searchStore(storeCode).getManager().getName();
+			String managerName = SearchIdCode.searchStore(storeCode).getManagerCode().getName();
 			Double totalSalesStore = 0.0;
 
 			for (Invoice invoice : invoiceList) {

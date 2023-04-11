@@ -9,7 +9,7 @@ public class Invoice {
 	public Person customer;
 	public Person salesPerson;
 	private LocalDate date;
-	List<Item> invoiceItems;
+	private List<Item> invoiceItems;
 
 	/**
 	 * @param invoiceCode
@@ -76,6 +76,9 @@ public class Invoice {
 	}
 	
 	public void addInvoiceItem(Item item) {
+		if (item == null) {
+			throw new IllegalArgumentException("Item cannot be null");
+		}
 		invoiceItems.add(item);
 	}
 

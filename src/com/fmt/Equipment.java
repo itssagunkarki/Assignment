@@ -20,14 +20,12 @@ public class Equipment extends Item {
 
 	@Override
 	public Double getTaxes() {
-		// TODO Auto-generated method stub
-		return null;
+		return 0.0;
 	}
 
 	@Override
 	public Double getPrice() {
-		// TODO Auto-generated method stub
-		return null;
+		return 0.0;
 	}
 
 }
