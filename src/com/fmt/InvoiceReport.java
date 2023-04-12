@@ -104,76 +104,8 @@ public class InvoiceReport {
 	public static void getReportPerInvoice() {
 		HashMap<String, Invoice> invoices = DataLoader.loadInvoice();
 		for (String s : invoices.keySet()) {
-			System.out.println("Invoice #" + s);
-			System.out.println("Store\t#" + invoices.get(s).getStore().getStoreCode());
-			System.out.println("Date\t" + invoices.get(s).getDate());
-			System.out.println("Customer:");
-
-			System.out.println(invoices.get(s).getCustomer().getPersonDetails());
-			System.out.println("Sales Person:");
-			System.out.println(invoices.get(s).getSalesPerson().getPersonDetails());
-
-			System.out.println("Item                                                        		    Total\n"
-					+ "-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-               -=-=-=-=-=-");
-
-			List<Item> items = invoices.get(s).getInvoiceItems();
-
-			if (items.size() > 0) {
-
-				for (int i = 0; i < items.size(); i++) {
-					if (items.get(i).getItemType().equals("E")) {
-						Item equipment = (Item) items.get(i);
-						System.out.println(equipment.getItemCode());
-						if (equipment instanceof PurchaseEquipment) {
-							PurchaseEquipment purchaseEquipment = (PurchaseEquipment) equipment;
-							System.out.printf(
-									"%s				(Purchase) %s %s				\n"
-											+ "								$ %-70.2f\n",
-									purchaseEquipment.getItemCode(), purchaseEquipment.getItemName(),
-									purchaseEquipment.getModel(), purchaseEquipment.getPrice());
-						} else if (equipment instanceof LeaseEquipment) {
-							LeaseEquipment leaseEquipment = (LeaseEquipment) equipment;
-
-							System.out.printf(
-									"%s				(lease) %s %s				\n \t\t 365(%s -> %s) @$%.2f / 30 days\n"
-											+ "									$%-70.2f\n",
-									leaseEquipment.getItemCode(), leaseEquipment.getItemName(),
-									leaseEquipment.getModel(), leaseEquipment.getStartDate().toString(),
-									leaseEquipment.getEndDate().toString(), leaseEquipment.getLeasePrice(),
-									leaseEquipment.getPrice());
-
-						}
-					} else if (items.get(i).getItemType().equals("P")) {
-						Product product = (Product) items.get(i);
-						System.out.printf(
-								"%s				(Product) %s 				\n \t \t \t %.0f @ %.2f/%s\n"
-										+ "									$%-70.2f\n",
-								product.getItemCode(), product.getItemName(), product.getQuantity(),
-								product.getUnitPrice(), product.getUnit(), product.getPrice());
-					} else if (items.get(i).getItemType().equals("S")) {
-						Service service = (Service) items.get(i);
-						System.out.printf(
-								"%s				(Service) %s 				\n \t \t \t %.1fhrs @ %.2f/hr\n"
-										+ "									$%-70.2f\n",
-								service.getItemCode(), service.getItemName(), service.getNumHours(),
-								service.getHourlyRate(), service.getPrice());
-					}
-				}
-				System.out.printf(
-						"                                                          		-=-=-=-=-=-\n"
-								+ "                                           		   Subtotal $   %-70.2f\n"
-								+ "                                             			Tax $    %-70.2f\n"
-								+ "                                          		Grand Total $   %-70.2f\n\n",
-						invoices.get(s).getInvoicePrice(), invoices.get(s).getTotalInvoiceTaxes(),
-						invoices.get(s).getTotalInvoicePrice());
-			} else {
-				System.out.printf("                                                          		-=-=-=-=-=-\n"
-						+ "                                           		      Subtotal $  0\n"
-						+ "                                             		   	   Tax $  0\n"
-						+ "                                          		   Grand Total $  0\n\n");
-			}
+			invoices.get(s).getInvoiceReport();
 		}
-
 	}
 
 	public static void main(String[] args) {

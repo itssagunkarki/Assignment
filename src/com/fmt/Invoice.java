@@ -51,35 +51,110 @@ public class Invoice {
 	public List<Item> getInvoiceItems() {
 		return invoiceItems;
 	}
-	
+
 	public Double getTotalInvoiceTaxes() {
 		Double totalTax = 0.0;
-		for (Item i: invoiceItems) {
+		for (Item i : invoiceItems) {
 			totalTax += i.getTaxes();
 		}
 		return totalTax;
 	}
-	
+
 	public Double getTotalInvoicePrice() {
 		Double totalPrice = 0.0;
-		for (Item i: invoiceItems) {
+		for (Item i : invoiceItems) {
 			totalPrice += i.getTotalPrice();
 		}
 		return totalPrice;
 	}
+
 	public Double getInvoicePrice() {
 		Double totalPrice = 0.0;
-		for (Item i: invoiceItems) {
+		for (Item i : invoiceItems) {
 			totalPrice += i.getPrice();
 		}
 		return totalPrice;
 	}
-	
+
 	public void addInvoiceItem(Item item) {
 		if (item == null) {
 			throw new IllegalArgumentException("Item cannot be null");
 		}
 		invoiceItems.add(item);
 	}
+	private void getInvoiceReportHeader(){
+		System.out.println("Invoice #" + getInvoiceCode());
+		System.out.println("Store\t#" + getStore().getStoreCode());
+		System.out.println("Date\t" + getDate());
+		System.out.println("Customer:");
+	
+		System.out.println(getCustomer().getPersonDetails());
+		System.out.println("Sales Person:");
+		System.out.println(getSalesPerson().getPersonDetails());
+		
+	}
+	
+	private void getInvoiceReportFooter(Double total, Double tax, Double grandTotal){
+		System.out.printf(
+				"                                                          		-=-=-=-=-=-\n"
+						+ "                                           		   Subtotal $   %-70.2f\n"
+						+ "                                             			Tax $    %-70.2f\n"
+						+ "                                          		Grand Total $   %-70.2f\n\n",
+				total, tax, grandTotal);
+		
+	}
 
+	public void getInvoiceReport() {
+		getInvoiceReportHeader();
+
+		System.out.println("Item                                                        		    Total\n"
+				+ "-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-               -=-=-=-=-=-");
+
+		List<Item> items = getInvoiceItems();
+
+		if (items.size() > 0) {
+
+			for (int i = 0; i < items.size(); i++) {
+				if (items.get(i).getItemType().equals("E")) {
+					Item equipment = (Item) items.get(i);
+					System.out.println(equipment.getItemCode());
+					if (equipment instanceof PurchaseEquipment) {
+						PurchaseEquipment purchaseEquipment = (PurchaseEquipment) equipment;
+						System.out.printf(
+								"%s				(Purchase) %s %s				\n"
+										+ "								$ %-70.2f\n",
+								purchaseEquipment.getItemCode(), purchaseEquipment.getItemName(),
+								purchaseEquipment.getModel(), purchaseEquipment.getPrice());
+					} else if (equipment instanceof LeaseEquipment) {
+						LeaseEquipment leaseEquipment = (LeaseEquipment) equipment;
+
+						System.out.printf(
+								"%s				(lease) %s %s				\n \t\t 365(%s -> %s)  %d days @$%.2f / 30 days\n"
+										+ "									$%-70.2f\n",
+								leaseEquipment.getItemCode(), leaseEquipment.getItemName(), leaseEquipment.getModel(),
+								leaseEquipment.getStartDate().toString(), leaseEquipment.getEndDate().toString(), leaseEquipment.getLeaseLength(),
+								leaseEquipment.getLeasePrice(), leaseEquipment.getPrice());
+
+					}
+				} else if (items.get(i).getItemType().equals("P")) {
+					Product product = (Product) items.get(i);
+					System.out.printf(
+							"%s				(Product) %s 				\n \t \t \t %.0f @ %.2f/%s\n"
+									+ "									$%-70.2f\n",
+							product.getItemCode(), product.getItemName(), product.getQuantity(), product.getUnitPrice(),
+							product.getUnit(), product.getPrice());
+				} else if (items.get(i).getItemType().equals("S")) {
+					Service service = (Service) items.get(i);
+					System.out.printf(
+							"%s				(Service) %s 				\n \t \t \t %.1fhrs @ %.2f/hr\n"
+									+ "									$%-70.2f\n",
+							service.getItemCode(), service.getItemName(), service.getNumHours(),
+							service.getHourlyRate(), service.getPrice());
+				}
+			}
+			getInvoiceReportFooter(getTotalInvoicePrice(), getTotalInvoiceTaxes(), getInvoicePrice());
+		} else {
+			getInvoiceReportFooter(0.0, 0.0, 0.0);
+		}
+	}
 }
