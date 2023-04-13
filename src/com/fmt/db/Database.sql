@@ -30,6 +30,7 @@ create table Address(
     city varchar(255) not null,
     stateId int not null,
     zipCode varchar(16) not null,
+    deleted boolean not null default false,
     foreign key (stateId) references State(stateId)
 );
 
@@ -40,6 +41,7 @@ create table Person (
     lastName varchar(255) not null,
     firstName varchar(255) not null,
     addressId int not null,
+    deleted boolean not null default false,
     foreign key (addressId) references Address(addressId),
     index personCode_idx (personCode) -- index created for faster lookup
 );
@@ -48,6 +50,7 @@ create table Email (
     emailId int not null primary key auto_increment,
     email varchar(255) not null,
     personId int not null,
+    deleted boolean not null default false,
     foreign key (personId) references Person(personId)
 );
 
@@ -57,6 +60,7 @@ create table Store(
     storeCode varchar(10) not null unique,
     managerId int not null,
     addressId int not null,
+    deleted boolean not null default false,
     foreign key (addressId) references Address(addressId),
     foreign key (managerId) references Person(personId),
     index storeCode_idx (storeCode)
@@ -71,6 +75,7 @@ create table Item (
     unitPrice double null,
     ServiceName varchar(255) null,
     HourlyRate double null,
+    deleted boolean not null default false,
     index itemCode_idx (itemCode) -- index created for faster lookup
 );
 
@@ -82,6 +87,7 @@ create table Invoice (
     customerId int not null,
     salesPersonId int not null,
     invoiceDate varchar(32) not null,
+    deleted boolean not null default false,
     foreign key (storeId) references Store(storeId),
     foreign key (customerId) references Person(personId),
     foreign key (salesPersonId) references Person(personId),
@@ -101,6 +107,7 @@ create table InvoiceItem (
     purchasePrice double null,
     quantity int null,
     numHours double null,
+    deleted boolean not null default false,
     foreign key (invoiceId) references Invoice(invoiceId),
     foreign key (itemId) references Item(itemId)
 );
