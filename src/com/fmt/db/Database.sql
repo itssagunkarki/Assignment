@@ -71,6 +71,7 @@ create table Item (
     itemCode varchar(10) not null unique,
     itemType char not null,
     itemName varchar(255) not null,
+    model varchar(255) null,
     unit varchar(255) null,
     unitPrice double null,
     ServiceName varchar(255) null,
@@ -101,6 +102,7 @@ create table InvoiceItem (
     itemType char not null,
     itemPrice double not null,
     itemTaxes double not null,
+    leaseOrPurchase char null,
     leasePriceMonthly int  null,
     leaseStartDate varchar(32) null,
     leaseEndDate varchar(32) null,
@@ -181,12 +183,12 @@ values
 
 
 -- -- Inserting data into the Item table
-insert into Item (itemCode, itemType, itemName) values
-('1d4d89', 'E', 'Tractor'),
-('0ec6e9', 'E', 'Harvester'),
-('740515', 'E', 'Baler'),
-('3506f6', 'E', 'Backhoe'),
-('649f88', 'E', 'Truck');
+insert into Item (itemCode, itemType, itemName, model) values
+('1d4d89', 'E', 'Tractor', "MegaTract 150HP"),
+('0ec6e9', 'E', 'Harvester', "Husker 2000"),
+('740515', 'E', 'Baler', "Haymaker 400"),
+('3506f6', 'E', 'Backhoe', "BidDoug X25"),
+('649f88', 'E', 'Truck', "F105");
 
 insert into Item (itemCode, itemType, itemName, unit, unitPrice) values
 ('342foa3', 'P', 'Haybale', 'bale', 500),
@@ -212,11 +214,11 @@ insert into Invoice (invoiceCode, storeId, customerId, salesPersonId, invoiceDat
 ('INV006', 1, 2, 6, '2023-03-15');
 
 
-insert into InvoiceItem (invoiceId, itemid, itemType, itemPrice, itemTaxes, leasePriceMonthly, leaseStartDate, leaseEndDate) values
-(3, 1,"E", 42700.000, 500.000, 3500,'2022-01-01', '2022-01-31');
+insert into InvoiceItem (invoiceId, itemid, itemType, itemPrice, itemTaxes, leaseOrPurchase, leasePriceMonthly, leaseStartDate, leaseEndDate) values
+(3, 1,"E", 42700.000, 500.000, 'L', 3500,'2022-01-01', '2022-01-31');
 
-insert into InvoiceItem (invoiceId, itemid, itemType, itemPrice, itemTaxes, purchasePrice) values 
-(1, 2, "E",85000.000, 0.000, 85000);
+insert into InvoiceItem (invoiceId, itemid, itemType, itemPrice, itemTaxes, leaseOrPurchase, purchasePrice) values 
+(1, 2, "E", 85000.000, 0.000, 'P', 85000);
 
 
 insert into InvoiceItem (invoiceId, itemid, itemType, itemPrice, itemTaxes, quantity) values 
