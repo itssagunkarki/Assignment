@@ -1,18 +1,16 @@
 package com.fmt;
 
-import java.io.File;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Scanner;
+
 
 public class DataLoader {
-	public static final String FILE_PATH_PERSONS = "data/Persons.csv";
-	public static final String FILE_PATH_ITEMS = "data/Items.csv";
-	public static final String FILE_PATH_STORES = "data/Stores.csv";
-	public static final String FILE_PATH_INVOICE = "data/Invoices.csv";
-	public static final String FILE_PATH_INVOICE_ITEMS = "data/InvoiceItems.csv";
 
 	/**
 	 * It loads Person.csv converts it into its class and returns a hashmap of
@@ -23,44 +21,52 @@ public class DataLoader {
 
 	public static HashMap<String, Person> loadPerson() {
 		HashMap<String, Person> result = new HashMap<String, Person>();
-		String line = null;
-		try (Scanner s = new Scanner(new File(FILE_PATH_PERSONS))) {
-			int numRecords = Integer.parseInt(s.nextLine());
-			for (int i = 0; i < numRecords; i++) {
-				line = s.nextLine();
-				if (!line.trim().isEmpty()) {
-					String token[] = line.split(",", -1);
+		try (Connection conn = ConnectionFactory.getConnection()) {
+			String query = "SELECT p.personCode, p.lastName, p.firstName, a.street, a.city, s.stateCode, a.zipCode, c.countryCode, e.email FROM Person AS p \n"
+					+ "LEFT JOIN Address AS a ON p.addressId = a.addressId\n"
+					+ "LEFT JOIN State AS s ON s.stateId = a.stateId\n"
+					+ "LEFT JOIN Country AS c ON c.countryId = s.countryId\n"
+					+ "LEFT JOIN Email AS e ON e.personId = p.personId";
+			PreparedStatement ps = conn.prepareStatement(query);
 
-					String personCode = token[0];
-					String lastName = token[1];
-					String firstName = token[2];
+			ResultSet rs = ps.executeQuery();
 
-					String street = token[3];
-					String city = token[4];
-					String state = token[5];
-					String zip = token[6];
-					String country = token[7];
+			while (rs.next()) {
+				String personCode = rs.getString("personCode");
+				String lastName = rs.getString("lastName");
+				String firstName = rs.getString("firstName");
 
-					int n = 8;
-					List<String> emails = new ArrayList<String>();
-					while (n < token.length) {
-						emails.add(token[n]);
-						n++;
-					}
+				String street = rs.getString("street");
+				String city = rs.getString("city");
+				String state = rs.getString("stateCode");
+				String zip = rs.getString("zipCode");
+				String country = rs.getString("countryCode");
+
+				String email = rs.getString("email");
+
+				// Check if the person is already in the map
+				Person person = result.get(personCode);
+				if (person == null) {
+					List<String> emails = new ArrayList<>();
+					emails.add(email);
+
 					Address address = new Address(street, city, state, zip, country);
-					Person person = new Person(personCode, lastName, firstName, address, emails);
-
+					person = new Person(personCode, lastName, firstName, address, emails);
 					result.put(personCode, person);
-
+				} else {
+					person.getEmails().add(email);
 				}
-
 			}
+			ps.close();
+			rs.close();
+			conn.close();
 
-		} catch (Exception e) {
-			throw new RuntimeException("Encountered Error on line " + line, e);
+		} catch (
+
+		SQLException e) {
+			e.printStackTrace();
 		}
 		return result;
-
 	}
 
 	/**
@@ -72,33 +78,44 @@ public class DataLoader {
 
 	public static HashMap<String, Store> loadStores() {
 		HashMap<String, Store> result = new HashMap<String, Store>();
-		String line = null;
+		HashMap<String, Person> personMap = loadPerson();
 
-		try (Scanner s = new Scanner(new File(FILE_PATH_STORES))) {
-			int numRecords = Integer.parseInt(s.nextLine());
-			for (int i = 0; i < numRecords; i++) {
-				line = s.nextLine();
-				if (!line.trim().isEmpty()) {
-					String token[] = line.split(",", -1);
-					String storeCode = token[0];
-					Person managerCode = SearchIdCode.searchPerson(token[1]);
+		try (Connection conn = ConnectionFactory.getConnection()) {
 
-					String street = token[2];
-					String city = token[3];
-					String state = token[4];
-					String zip = token[5];
-					String country = token[6];
+			String query = "select s.storeCode, a.street, a.city, st.stateCode, a.zipCode, c.countryCode, p.personCode as managerCode from Store as s\n"
+					+ "left join Address as a on s.addressId = a.addressId\n"
+					+ "left join State as st on st.stateId = a.stateId\n"
+					+ "left join Country as c on c.countryId = st.countryId\n"
+					+ "left join Person as p on p.personId = s.storeId";
+			PreparedStatement ps = conn.prepareStatement(query);
 
-					Address address = new Address(street, city, state, zip, country);
-					Store store = new Store(storeCode, managerCode, address);
+			ResultSet rs = ps.executeQuery();
 
-					result.put(storeCode, store);
-				}
+			while (rs.next()) {
+
+				String storeCode = rs.getString("storeCode");
+				Person managerCode = personMap.get(rs.getString("managerCode"));
+
+				String street = rs.getString("street");
+				String city = rs.getString("city");
+				String state = rs.getString("stateCode");
+				String zip = rs.getString("zipCode");
+				String country = rs.getString("countryCode");
+
+				Address address = new Address(street, city, state, zip, country);
+				Store store = new Store(storeCode, managerCode, address);
+
+				result.put(storeCode, store);
 
 			}
+			ps.close();
+			rs.close();
+			conn.close();
 
-		} catch (Exception e) {
-			throw new RuntimeException("Encountered Error on line " + line, e);
+		} catch (
+
+		SQLException e) {
+			e.printStackTrace();
 		}
 		return result;
 
@@ -113,37 +130,84 @@ public class DataLoader {
 
 	public static HashMap<String, Item> loadItems() {
 		HashMap<String, Item> result = new HashMap<String, Item>();
-		String line = null;
-		try (Scanner s = new Scanner(new File(FILE_PATH_ITEMS))) {
-			int numRecords = Integer.parseInt(s.nextLine());
-			Item item = null;
-			for (int i = 0; i < numRecords; i++) {
-				line = s.nextLine();
-				if (!line.trim().isEmpty()) {
-					String token[] = line.split(",", -1);
-					String itemCode = token[0];
-					String itemType = token[1];
-					String itemName = token[2];
-					if (itemType.equals("E")) {
-						String model = token[3];
-						item = new Equipment(itemCode, itemType, itemName, model);
-					} else if (itemType.equals("P")) {
-						String unit = token[3];
-						Double unitPrice = Double.parseDouble(token[4]);
-						item = new Product(itemCode, itemType, itemName, unit, unitPrice);
-					} else if (itemType.equals("S")) {
-						Double hourlyRate = Double.parseDouble(token[3]);
-						item = new Service(itemCode, itemType, itemName, hourlyRate);
-					}
-					result.put(itemCode, item);
+		Item item = null;
+		try (Connection conn = ConnectionFactory.getConnection()) {
+			String query = "select itemCode, itemType, itemName, model, unit, unitPrice, hourlyRate from Item as i;";
+			PreparedStatement ps = conn.prepareStatement(query);
+
+			ResultSet rs = ps.executeQuery();
+			while (rs.next()) {
+
+				String itemCode = rs.getString("itemCode");
+				String itemType = rs.getString("itemType");
+				String itemName = rs.getString("itemName");
+				if (itemType.equals("E")) {
+					String model = rs.getString("model");
+					item = new Equipment(itemCode, itemType, itemName, model);
+				} else if (itemType.equals("P")) {
+					String unit = rs.getString("unit");
+					Double unitPrice = Double.parseDouble(rs.getString("unitPrice"));
+					item = new Product(itemCode, itemType, itemName, unit, unitPrice);
+				} else if (itemType.equals("S")) {
+					Double hourlyRate = Double.parseDouble(rs.getString("hourlyRate"));
+					item = new Service(itemCode, itemType, itemName, hourlyRate);
 				}
-
+				result.put(itemCode, item);
 			}
-
+			ps.close();
+			rs.close();
+			conn.close();
 		} catch (Exception e) {
-			throw new RuntimeException("Encountered Error on line " + line, e);
+			e.printStackTrace();
 		}
 		return result;
+	}
+
+	private static HashMap<String, Invoice> loadInvoiceItems(HashMap<String, Invoice> invoiceMap) {
+		HashMap<String, Item> itemMap = loadItems();
+		try (Connection conn = ConnectionFactory.getConnection()) {
+			String query = "select i.invoiceCode, Item.itemType, Item.itemCode, ii.leaseOrPurchase, ii.leasePriceMonthly, ii.leaseStartDate, ii.leaseEndDate, ii.purchasePrice, ii.quantity, ii.numHours\n"
+					+ "from InvoiceItem as ii\n" + "left join Invoice as i on i.invoiceId = ii.invoiceId\n"
+					+ "left join Item on Item.itemId = ii.itemId";
+			PreparedStatement ps = conn.prepareStatement(query);
+
+			ResultSet rs = ps.executeQuery();
+			while (rs.next()) {
+				String invoiceCode = rs.getString("invoiceCode");
+				String itemType = rs.getString("itemType");
+				String leaseOrPurchase = rs.getString("leaseOrPurchase");
+				String itemCode = rs.getString("itemCode");
+				if (itemType.equals("E")) {
+					if (leaseOrPurchase.equals("L")) {
+						Double leasePriceMonthly = Double.parseDouble(rs.getString("leasePriceMonthly"));
+						LocalDate leaseStartDate = LocalDate.parse(rs.getString("leaseStartDate"));
+						LocalDate leaseEndDate = LocalDate.parse(rs.getString("leaseEndDate"));
+						Equipment equipment = new LeaseEquipment((Equipment) itemMap.get(itemCode), leasePriceMonthly,
+								leaseStartDate, leaseEndDate);
+						invoiceMap.get(invoiceCode).getInvoiceItems().add(equipment);
+					} else if (leaseOrPurchase.equals("P")) {
+						Double purchasePrice = Double.parseDouble(rs.getString("purchasePrice"));
+						Equipment equipment = new PurchaseEquipment((Equipment) itemMap.get(itemCode), purchasePrice);
+						invoiceMap.get(invoiceCode).getInvoiceItems().add(equipment);
+					}
+				} else if (itemType.equals("P")) {
+					Double quantity = Double.parseDouble(rs.getString("quantity"));
+					Product product = new Product((Product) itemMap.get(itemCode), quantity);
+					invoiceMap.get(invoiceCode).getInvoiceItems().add(product);
+				} else if (itemType.equals("S")) {
+					Double numHours = Double.parseDouble(rs.getString("numHours"));
+					Service service = new Service((Service) itemMap.get(itemCode), numHours);
+					invoiceMap.get(invoiceCode).getInvoiceItems().add(service);
+				}
+			}
+			ps.close();
+			rs.close();
+			conn.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return invoiceMap;
 	}
 
 	/**
@@ -152,113 +216,39 @@ public class DataLoader {
 	 * @return
 	 */
 
-	private static HashMap<String, Invoice> loadWithoutItems() {
-		HashMap<String, Invoice> result = new HashMap<String, Invoice>();
-
-		String line = null;
-		try (Scanner s = new Scanner(new File(FILE_PATH_INVOICE))) {
-
-			int numRecords = Integer.parseInt(s.nextLine());
-			Invoice invoice = null;
-			for (int i = 0; i < numRecords; i++) {
-				line = s.nextLine();
-				if (!line.trim().isEmpty()) {
-					String token[] = line.split(",", -1);
-					String invoiceCode = token[0];
-
-					Store store = SearchIdCode.searchStore(token[1]);
-					Person customer = SearchIdCode.searchPerson(token[2]);
-					Person salesPerson = SearchIdCode.searchPerson(token[3]);
-					LocalDate date = LocalDate.parse(token[4]);
-
-					invoice = new Invoice(invoiceCode, store, customer, salesPerson, date, new ArrayList<Item>());
-					result.put(invoiceCode, invoice);
-				}
-
-			}
-
-		} catch (Exception e) {
-			throw new RuntimeException("Encountered Error on line " + line, e);
-		}
-		return result;
-	}
-
-	/**
-	 * It loads Items of all the invoices and arranges them based on which invoice
-	 * it is from
-	 * 
-	 * @param HashMap
-	 */
-
-	private static HashMap<String, List<Item>> loadInvoiceItems() {
-		HashMap<String, List<Item>> result = new HashMap<String, List<Item>>();
-		String line = null;
-
-		try (Scanner s = new Scanner(new File(FILE_PATH_INVOICE_ITEMS))) {
-			int numRecords = Integer.parseInt(s.nextLine());
-			for (int i = 0; i < numRecords; i++) {
-				line = s.nextLine();
-				if (!line.trim().isEmpty()) {
-					String token[] = line.split(",", -1);
-					String invoiceCode = token[0];
-					String itemCode = token[1];
-
-//					create an empty array list for hashmap if not exists
-					if (result.get(invoiceCode) == null) {
-						result.put(invoiceCode, new ArrayList<Item>());
-					}
-
-					String PurchaseOrLease = token[2];
-					if (SearchIdCode.searchItem(itemCode).getItemType().equals("E")) {
-
-						Equipment equipment = null;
-
-						if (PurchaseOrLease.equals("P")) {
-							equipment = new PurchaseEquipment((Equipment) SearchIdCode.searchItem(itemCode),
-									Double.parseDouble(token[3]));
-							result.get(invoiceCode).add(equipment);
-
-						} else if (PurchaseOrLease.equals("L")) {
-							Double leasePrice = Double.parseDouble(token[3]);
-							LocalDate startDate = LocalDate.parse(token[4]);
-							LocalDate endDate = LocalDate.parse(token[5]);
-							equipment = new LeaseEquipment((Equipment) SearchIdCode.searchItem(itemCode), leasePrice,
-									startDate, endDate);
-							result.get(invoiceCode).add(equipment);
-						}
-
-					} else if (SearchIdCode.searchItem(itemCode).getItemType().equals("P")) {
-
-						Double quantity = Double.parseDouble(token[2]);
-						Product product = new Product((Product) SearchIdCode.searchItem(itemCode), quantity);
-						result.get(invoiceCode).add(product);
-
-					} else if (SearchIdCode.searchItem(itemCode).getItemType().equals("S")) {
-
-						Double numHours = Double.parseDouble(token[2]);
-						Service service = new Service((Service) SearchIdCode.searchItem(itemCode), numHours);
-						result.get(invoiceCode).add(service);
-					}
-				}
-
-			}
-
-		} catch (Exception e) {
-			throw new RuntimeException("Encountered Error on line " + line, e);
-		}
-		return result;
-	}
-
 	public static HashMap<String, Invoice> loadInvoice() {
-		HashMap<String, Invoice> invoices = loadWithoutItems();
-		HashMap<String, List<Item>> invoiceItems = loadInvoiceItems();
+		HashMap<String, Person> persons = loadPerson();
+		HashMap<String, Store> stores = loadStores();
 
-		for (String i : invoiceItems.keySet()) {
-			for (Item item : invoiceItems.get(i)) {
-				invoices.get(i).addInvoiceItem(item);
+		HashMap<String, Invoice> result = new HashMap<String, Invoice>();
+		try (Connection conn = ConnectionFactory.getConnection()) {
+			String query = "SELECT DISTINCT i.invoiceCode, s.storeCode, pc.personCode as customerCode, ps.personCode as salesPersonCode, i.InvoiceDate\n"
+					+ "FROM Invoice as i \n" + "LEFT JOIN Person as pc ON i.customerId = pc.personId\n"
+					+ "LEFT JOIN Person as ps ON i.salesPersonId = ps.personId\n"
+					+ "LEFT JOIN Store as s ON s.storeId = i.storeId";
+
+			PreparedStatement ps = conn.prepareStatement(query);
+
+			ResultSet rs = ps.executeQuery();
+			while (rs.next()) {
+				String invoiceCode = rs.getString("invoiceCode");
+				Store store = stores.get(rs.getString("storeCode"));
+				Person customer = persons.get(rs.getString("customerCode"));
+				Person salesPerson = persons.get(rs.getString("salesPersonCode"));
+				LocalDate invoiceDate = LocalDate.parse(rs.getString("invoiceDate"));
+				Invoice invoice = new Invoice(invoiceCode, store, customer, salesPerson, invoiceDate,
+						new ArrayList<>());
+
+				result.put(invoiceCode, invoice);
 			}
+			ps.close();
+			rs.close();
+			conn.close();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-		return invoices;
+
+		return loadInvoiceItems(result);
 
 	}
 }
