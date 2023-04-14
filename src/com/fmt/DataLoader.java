@@ -8,9 +8,10 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
+import org.apache.logging.log4j.*;
 
 public class DataLoader {
+	private static Logger log = LogManager.getLogger(DataLoader.class);
 
 	/**
 	 * It loads Person.csv converts it into its class and returns a hashmap of
@@ -64,7 +65,7 @@ public class DataLoader {
 		} catch (
 
 		SQLException e) {
-			e.printStackTrace();
+			log.error("Failed loading Persons");
 		}
 		return result;
 	}
@@ -115,7 +116,7 @@ public class DataLoader {
 		} catch (
 
 		SQLException e) {
-			e.printStackTrace();
+			log.error("Failed loading Stores ");
 		}
 		return result;
 
@@ -158,7 +159,7 @@ public class DataLoader {
 			rs.close();
 			conn.close();
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error("Failed loading Items ");
 		}
 		return result;
 	}
@@ -204,7 +205,7 @@ public class DataLoader {
 			rs.close();
 			conn.close();
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error("Failed loading InvoiceItems");
 		}
 
 		return invoiceMap;
@@ -245,7 +246,7 @@ public class DataLoader {
 			rs.close();
 			conn.close();
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error("Failed loading Invoices");
 		}
 
 		return loadInvoiceItems(result);
