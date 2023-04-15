@@ -193,7 +193,7 @@ insert into Item (itemCode, itemType, itemName, model) values
 insert into Item (itemCode, itemType, itemName, unit, unitPrice) values
 ('342foa3', 'P', 'Haybale', 'bale', 500),
 ('3n3k4l2', 'P', 'Corn seed', 'bag', 50),
-('n3453js', 'P', 'Fertilizer', 'liter', 10.25),
+('n3453js', 'P', 'Fertilizer', 'liter', 50),
 ('l4k32j4', 'P', 'Wire fencing', 'ft', 8),
 ('23n4kl2', 'P', 'Top soil', 'ton', 850);
 
@@ -215,14 +215,14 @@ insert into Invoice (invoiceCode, storeId, customerId, salesPersonId, invoiceDat
 
 
 insert into InvoiceItem (invoiceId, itemid, itemType, itemPrice, itemTaxes, leaseOrPurchase, leasePriceMonthly, leaseStartDate, leaseEndDate) values
-(3, 1,"E", 42700.000, 500.000, 'L', 3500,'2022-01-01', '2022-01-31');
+(3, 1,"E", 42700.000, 500.000, 'L', 3500,'2022-01-01', '2022-12-31');
 
 insert into InvoiceItem (invoiceId, itemid, itemType, itemPrice, itemTaxes, leaseOrPurchase, purchasePrice) values 
 (1, 2, "E", 85000.000, 0.000, 'P', 85000);
 
 
 insert into InvoiceItem (invoiceId, itemid, itemType, itemPrice, itemTaxes, quantity) values 
-(2, 8,"P", 51.250, 3.660, 5),
+(2, 8,"P", 51.250, 3.660, 1.025),
 (2, 9,"P", 4400.000, 314.600, 550),
 (3, 9,"P", 1264.000, 90.380, 158),
 (4, 8,"P", 150.000, 10.730, 3);
