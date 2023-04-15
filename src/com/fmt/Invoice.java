@@ -59,15 +59,6 @@ public class Invoice {
 		}
 		return totalTax;
 	}
-
-	public Double getTotalInvoicePrice() {
-		Double totalPrice = 0.0;
-		for (Item i : invoiceItems) {
-			totalPrice += i.getTotalPrice();
-		}
-		return totalPrice;
-	}
-
 	public Double getInvoicePrice() {
 		Double totalPrice = 0.0;
 		for (Item i : invoiceItems) {
@@ -75,6 +66,13 @@ public class Invoice {
 		}
 		return totalPrice;
 	}
+
+	public Double getTotalInvoicePrice() {
+		Double totalPrice = getTotalInvoiceTaxes()+getInvoicePrice();
+		
+		return totalPrice;
+	}
+
 
 	public void addInvoiceItem(Item item) {
 		if (item == null) {
@@ -94,7 +92,7 @@ public class Invoice {
 		
 	}
 	
-	private void getInvoiceReportFooter(Double total, Double tax, Double grandTotal){
+	private void getInvoiceReportFooter(Double grandTotal, Double tax, Double total){
 		System.out.printf(
 				"                                                          		-=-=-=-=-=-\n"
 						+ "                                           		   Subtotal $   %-70.2f\n"
@@ -129,11 +127,11 @@ public class Invoice {
 						LeaseEquipment leaseEquipment = (LeaseEquipment) equipment;
 
 						System.out.printf(
-								"%s				(lease) %s %s				\n \t\t 365(%s -> %s)  %d days @$%.2f / 30 days\n"
+								"%s				(lease) %s %s				\n \t\t 365(%s -> %s)   @$%.2f / %d days\n"
 										+ "									$%-70.2f\n",
 								leaseEquipment.getItemCode(), leaseEquipment.getItemName(), leaseEquipment.getModel(),
-								leaseEquipment.getStartDate().toString(), leaseEquipment.getEndDate().toString(), leaseEquipment.getLeaseLength(),
-								leaseEquipment.getLeasePrice(), leaseEquipment.getPrice());
+								leaseEquipment.getStartDate().toString(), leaseEquipment.getEndDate().toString(), 
+								leaseEquipment.getLeasePrice(), leaseEquipment.getLeaseLength(), leaseEquipment.getPrice());
 
 					}
 				} else if (items.get(i).getItemType().equals("P")) {
