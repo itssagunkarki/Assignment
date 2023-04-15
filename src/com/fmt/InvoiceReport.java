@@ -80,7 +80,8 @@ public class InvoiceReport {
 		System.out.println("| Store      Manager                        # Sales    Grand Total    ");
 
 		Double totalSalesAllStores = 0.0;
-		int totalSales = 0;
+		int totalNumSales = 0;
+		HashMap<String, String> storeManager = new HashMap<String, String>();
 		for (String storeCode : invoicesByStores.keySet()) {
 			List<Invoice> invoiceList = invoicesByStores.get(storeCode);
 			String managerName = store.get(storeCode).getManagerCode().getName();
@@ -90,13 +91,23 @@ public class InvoiceReport {
 				totalSalesStore += invoice.getTotalInvoicePrice();
 			}
 			totalSalesAllStores += totalSalesStore;
-			System.out.printf("| %-10s%-30s%-11d$%10.2f |\n", storeCode, managerName, invoiceList.size(),
-					totalSalesStore);
-			totalSales += invoiceList.size();
+			// System.out.printf("| %-10s%-30s%-11d$%10.2f |\n", storeCode, managerName, invoiceList.size(),
+			// 		totalSalesStore);
+			String formattedString = String.format("| %-10s%-30s%-11d$%10.2f |", storeCode, managerName, invoiceList.size(), totalSalesStore);
+			storeManager.get(storeManager.put(storeCode, formattedString));
+
+
+			totalNumSales += invoiceList.size();
+		}
+		List<String> sortedManager = new ArrayList<>(storeManager.keySet());
+		Collections.sort(sortedManager, (i1, i2) -> i2.compareTo(i1));
+
+		for (String s : sortedManager) {
+			System.out.println(storeManager.get(s));
 		}
 
 		System.out.println("+----------------------------------------------------------------+");
-		System.out.printf("                                          %d          $ %.2f    \n\n", totalSales,
+		System.out.printf("                                          %d          $ %.2f    \n\n", totalNumSales,
 				totalSalesAllStores);
 
 	}
