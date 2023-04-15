@@ -12,9 +12,10 @@ import java.util.List;
  */
 
 public class InvoiceReport {
+	public static HashMap<String, Invoice> invoices = DataLoader.loadInvoice();
+	public static HashMap<String, Store> store = DataLoader.loadStores();
 
 	public static void reportByTotal() {
-		HashMap<String, Invoice> invoices = DataLoader.loadInvoice();
 		int totalItems = 0;
 		Double totalTax = 0.0;
 		Double totalTotal = 0.0;
@@ -46,11 +47,10 @@ public class InvoiceReport {
 		System.out.printf("%60d          $%.2f   $ %.2f\n\n", totalItems, totalTax, totalTotal);
 	}
 
+
 	private static HashMap<String, List<Invoice>> groupInvoicesByStore() {
 		HashMap<String, List<Invoice>> result = new HashMap<String, List<Invoice>>();
 
-		HashMap<String, Store> store = DataLoader.loadStores();
-		HashMap<String, Invoice> invoices = DataLoader.loadInvoice();
 
 		for (String i : store.keySet()) {
 
@@ -83,7 +83,7 @@ public class InvoiceReport {
 		int totalSales = 0;
 		for (String storeCode : invoicesByStores.keySet()) {
 			List<Invoice> invoiceList = invoicesByStores.get(storeCode);
-			String managerName = SearchIdCode.searchStore(storeCode).getManagerCode().getName();
+			String managerName = store.get(storeCode).getManagerCode().getName();
 			Double totalSalesStore = 0.0;
 
 			for (Invoice invoice : invoiceList) {
@@ -100,6 +100,7 @@ public class InvoiceReport {
 				totalSalesAllStores);
 
 	}
+
 
 	public static void getReportPerInvoice() {
 		HashMap<String, Invoice> invoices = DataLoader.loadInvoice();
