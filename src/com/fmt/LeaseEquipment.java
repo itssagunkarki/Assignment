@@ -39,7 +39,7 @@ public class LeaseEquipment extends Equipment {
 
 	public int getLeaseLength() {
 		long daysBetween = ChronoUnit.DAYS.between(startDate, endDate);
-		return (int) (daysBetween + 1);
+		return (int) (daysBetween);
 	}
 
 	@Override
