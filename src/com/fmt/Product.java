@@ -25,6 +25,10 @@ public class Product extends Item {
 	    this.quantity = quantity;
 	}
 
+	public void setQuantity(Double quantity) {
+		this.quantity = quantity;
+	}
+
 	public String getUnit() {
 		return unit;
 	}

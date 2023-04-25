@@ -21,6 +21,10 @@ public class Service extends Item {
 	    this.numHours = numHours;
 	}
 
+	public void setNumHours(double numHours) {
+	    this.numHours = numHours;
+	}
+
 
 	public double getHourlyRate() {
 		return hourlyRate;
