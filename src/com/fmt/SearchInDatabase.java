@@ -204,4 +204,143 @@ public class SearchInDatabase {
             return -1;
         }
     }
+
+
+    public static int getInvoiceId(String invoiceCode, Connection conn) {
+        try{
+			String sql = "SELECT invoiceId FROM Invoice WHERE invoiceCode = ?";
+			PreparedStatement ps = conn.prepareStatement(sql);
+			ps.setString(1, invoiceCode);
+			ResultSet rs = ps.executeQuery();
+			if (rs.next() == false) {
+				return -1;
+			} else {
+				return rs.getInt("invoiceId");
+			}
+		} catch (SQLException e) {
+			log.error("Error searching for invoice", e);
+			return -1;
+		}
+
+    }
+
+	public static Product getProduct(String itemCode, Connection conn) {
+		Product product = null;
+		try {
+			String sql = "SELECT i.itemType, i.itemName, i.unit, i.unitPrice FROM Item as i WHERE i.itemCode = ?";
+			PreparedStatement ps = conn.prepareStatement(sql);
+			ps.setString(1, itemCode);
+			ResultSet rs = ps.executeQuery();
+			if (rs.next() == false) {
+				return null;
+			} else {
+				String itemType = rs.getString("itemType");
+				String itemName = rs.getString("itemName");
+				String unit = rs.getString("unit");
+				double unitPrice = rs.getDouble("unitPrice");
+				product = new Product(itemCode, itemType, itemName, unit, unitPrice);
+			}
+		} catch (SQLException e) {
+			log.error("Error searching for product", e);
+		}
+		return product;
+	}
+
+	public static Equipment getEquipment(String itemCode, Connection conn){
+		Equipment equipment = null;
+		try {
+			String sql = "SELECT i.itemType, i.itemName, i.model FROM Item as i WHERE i.itemCode = ?";
+			PreparedStatement ps = conn.prepareStatement(sql);
+			ps.setString(1, itemCode);
+			ResultSet rs = ps.executeQuery();
+			if (rs.next() == false) {
+				return null;
+			} else {
+				String itemType = rs.getString("itemType");
+				String itemName = rs.getString("itemName");
+				String model = rs.getString("model");
+				equipment = new Equipment(itemCode, itemType, itemName, model);
+			}
+		} catch (SQLException e) {
+			log.error("Error searching for equipment", e);
+		}
+		return equipment;
+	}
+
+	public static Service getService(String itemCode, Connection conn){
+		Service service = null;
+		try {
+			String sql = "SELECT i.itemType, i.itemName, i.hourlyRate FROM Item as i where i.itemCode = ?";
+			PreparedStatement ps = conn.prepareStatement(sql);
+			ps.setString(1, itemCode);
+			ResultSet rs = ps.executeQuery();
+			if (rs.next() == false) {
+				return null;
+			} else {
+				String itemType = rs.getString("itemType");
+				String itemName = rs.getString("itemName");
+				double hourlyRate = rs.getDouble("hourlyRate");
+				service = new Service(itemCode, itemType, itemName, hourlyRate);
+			}
+		} catch (SQLException e) {
+			log.error("Error searching for service", e);
+		}
+		return service;
+	}
+
+
+    public static int getCountryId(String countryCode, Connection conn) {
+        try {
+			String sql = "SELECT countryId FROM Country WHERE countryCode = ?";
+			PreparedStatement ps = conn.prepareStatement(sql);
+			ps.setString(1, countryCode);
+			ResultSet rs = ps.executeQuery();
+			if (rs.next() == false) {
+				return -1;
+			} else {
+				return rs.getInt("countryId");
+			}
+		} catch (SQLException e) {
+			log.error("Error searching for country", e);
+			return -1;
+		}
+    }
+
+	public static int searchInvoiceItem(int invoiceId, String itemCode, Connection conn){
+		try {
+			String sql = "SELECT invoiceItemId FROM InvoiceItem WHERE itemCode = ? AND invoiceId = ?";
+			PreparedStatement ps = conn.prepareStatement(sql);
+			ps.setString(1, itemCode);
+			ps.setInt(2, invoiceId);
+			ResultSet rs = ps.executeQuery();
+			if (rs.next() == false) {
+				return -1;
+			} else {
+				return rs.getInt("invoiceItemId");
+			}
+		} catch (SQLException e) {
+			log.error("Error searching for invoice item", e);
+			return -1;
+		}
+	}
+
+
+    public static int getInvoiceItemId(int invoiceId, String itemCode, Connection conn) {
+		int invoiceItemId = -1;
+        try {
+			String sql = "SELECT invoiceItemId FROM InvoiceItem as ii LEFT JOIN Item as i ON i.itemId = ii.itemId LEFT JOIN Invoice on Invoice.invoiceId = ii.invoiceId WHERE i.itemCode = ? AND ii.invoiceId = ?";
+			PreparedStatement ps = conn.prepareStatement(sql);
+			ps.setString(1, itemCode);
+			ps.setInt(2, invoiceId);
+			ResultSet rs = ps.executeQuery();
+			if (rs.next() == false) {
+				return -1;
+			} else {
+				invoiceItemId = rs.getInt("invoiceItemId");
+			}
+		} catch (SQLException e) {
+			log.error("Error searching for invoice item", e);
+		}
+		return invoiceItemId;
+    }
 }
