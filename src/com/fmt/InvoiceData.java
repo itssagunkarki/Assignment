@@ -20,35 +20,39 @@ public class InvoiceData {
 	 * Removes all records from all tables in the database.
 	 */
 	public static void clearDatabase() {
-// 		drop table if exists InvoiceItem;
-// drop table if exists Invoice;
-// drop table if exists Item;
-// drop table if exists Store;
-// drop table if exists Email;
-// drop table if exists Person;
-// drop table if exists Address;
-// drop table if exists State;
-// drop table if exists Country;
 		try (Connection conn = ConnectionFactory.getConnection()) {
-			Statement stmt = conn.createStatement();
-			// statements arranged according to foreign key dependencies
-			stmt.executeUpdate("DELETE FROM InvoiceItem");
-			stmt.executeUpdate("DELETE FROM Invoice");
-			stmt.executeUpdate("DELETE FROM Item");
-			stmt.executeUpdate("DELETE FROM Store");
-			stmt.executeUpdate("DELETE FROM Email");
-			stmt.executeUpdate("DELETE FROM Person");
-			stmt.executeUpdate("DELETE FROM Address");
-			stmt.executeUpdate("DELETE FROM State");
-			stmt.executeUpdate("DELETE FROM Country");
-			stmt.close();
+			// delete all records from tables in the correct order to avoid violating foreign key constraints
+			PreparedStatement ps = conn.prepareStatement("delete from InvoiceItem");
+			ps.executeUpdate();
+			ps = conn.prepareStatement("delete from Invoice");
+			ps.executeUpdate();
+			ps = conn.prepareStatement("delete from Item");
+			ps.executeUpdate();
+			ps = conn.prepareStatement("delete from Store");
+			ps.executeUpdate();
+			ps = conn.prepareStatement("delete from Email");
+			ps.executeUpdate();
+			ps = conn.prepareStatement("delete from Person");
+			ps.executeUpdate();
+			ps = conn.prepareStatement("delete from Address");
+			ps.executeUpdate();
+			ps = conn.prepareStatement("delete from State");
+			ps.executeUpdate();
+			ps = conn.prepareStatement("delete from Country");
+			ps.executeUpdate();
 		} catch (SQLException e) {
 			log.error("Error clearing database", e);
 		}
 
-
 	}
-	public static int addCountry(String countryCode, Connection conn){
+
+	/**
+	 * Method to add country into the database
+	 * @param countryCode
+	 * @param conn
+	 * @return
+	 */
+	private static int addCountry(String countryCode, Connection conn){
 		int countryId = -1;
 		try {
 			String sql = "INSERT INTO Country (countryCode) VALUES (?)";
@@ -57,17 +61,22 @@ public class InvoiceData {
 			ps.executeUpdate();
 			// get the generated keys:
 			ResultSet keys = ps.getGeneratedKeys();
-
-			// if we only expect one:
 			keys.next();
 			countryId = keys.getInt(1);
 		} catch (SQLException e) {
-			log.error("Error searching for country", e);
+			log.error("Error adding a country", e);
 		}
 		return countryId;
 	}
 
-	public static int addState(String stateCode, String countryCode, Connection conn){
+	/**
+	 * Method to add state into the database
+	 * @param stateCode
+	 * @param countryCode
+	 * @param conn
+	 * @return
+	 */
+	private static int addState(String stateCode, String countryCode, Connection conn){
 		int stateId = -1;
 		int countryId = -1;
 		try {
@@ -88,6 +97,18 @@ public class InvoiceData {
 		return stateId;
 	}
 
+	/**
+	 * Method to add address into the database
+	 * It checks if the address is already in the database before adding it, if it already exists it returns the addressId
+	 * 
+	 * @param street
+	 * @param city
+	 * @param state
+	 * @param zip
+	 * @param country
+	 * @param conn
+	 * @return addressId
+	 */
 	public static int addAddress (String street, String city, String state, String zip, String country, Connection conn) {
 		try {
 			String sql = "INSERT INTO Address (street, city, zipCode, stateId) VALUES (?, ?, ?, ?)";
@@ -135,12 +156,15 @@ public class InvoiceData {
 
 			int personId = SearchInDatabase.getPersonId(personCode, conn);
 			if (personId == -1) {
+				// check if address is already in the database
 				int addressId = SearchInDatabase.getAddressId(street, city, state, zip, country, conn);
 				if (addressId == -1) {
 					addressId = addAddress(street, city, state, zip, country, conn);
 				}
+
 				String sql = "INSERT INTO Person (personCode, firstName, lastName, addressId) VALUES (?, ?, ?, ?)";
 				PreparedStatement ps = conn.prepareStatement(sql);
+				
 				ps.setString(1, personCode);
 				ps.setString(2, firstName);
 				ps.setString(3, lastName);
@@ -166,15 +190,15 @@ public class InvoiceData {
 	public static void addEmail(String personCode, String email) {
 		try (Connection conn = ConnectionFactory.getConnection()) {
 			int personId = SearchInDatabase.getPersonId(personCode, conn);
-			if (personId == -1) {
+			if (personId != -1) {
+				String sql = "INSERT INTO Email (personId, email) VALUES (?, ?)";
+				PreparedStatement ps = conn.prepareStatement(sql);
+				ps.setInt(1, personId);
+				ps.setString(2, email);
+				ps.executeUpdate();
+			} else {
 				log.error("Person does not exist");
-				return;
 			}
-			String sql = "INSERT INTO Email (personId, email) VALUES (?, ?)";
-			PreparedStatement ps = conn.prepareStatement(sql);
-			ps.setInt(1, personId);
-			ps.setString(2, email);
-			ps.executeUpdate();
 		} catch (SQLException e) {
 			log.error("Error adding email", e);
 		}
@@ -202,11 +226,14 @@ public class InvoiceData {
 				if (addressId == -1) {
 					addressId = addAddress(street, city, state, zip, country, conn);
 				}
+
+				// if ther manager code does not exist, we cannot add the store violation of foreign key constraint
 				int managerId = SearchInDatabase.getPersonId(managerCode, conn);
 				if (managerId == -1) {
 					log.error("Manager details not available");
 					return;
 				}
+
 				String sql = "INSERT INTO Store (storeCode, managerId, addressId) VALUES (?, ?, ?)";
 				PreparedStatement ps = conn.prepareStatement(sql);
 				ps.setString(1, storeCode);
@@ -214,7 +241,7 @@ public class InvoiceData {
 				ps.setInt(3, addressId);
 				ps.executeUpdate();
 			} else {
-				log.error("Store already exists");
+				log.info("Store already exists");
 				return;
 			}
 		} catch (SQLException e) {
@@ -325,6 +352,8 @@ public class InvoiceData {
 		try (Connection conn = ConnectionFactory.getConnection()) {
 			int invoiceId = SearchInDatabase.getInvoiceId(invoiceCode, conn);
 			if (invoiceId == -1) {
+
+				// if storeId or customerId or salesPersonId does not exist, we cannot add the invoice; violation of foreign key constraint
 				int storeId = SearchInDatabase.getStoreId(storeCode, conn);
 				if (storeId == -1) {
 					log.error("Store details not available");
@@ -349,13 +378,40 @@ public class InvoiceData {
 				ps.setString(5, invoiceDate);
 				ps.executeUpdate();
 			} else {
-				log.error("Invoice already exists");
+				log.info("Invoice already exists");
 				return;
 			}
 		} catch (SQLException e) {
 			log.error("Error adding invoice", e);
 		}
 
+	}
+
+	private static void updateProductInInvoice(String invoiceCode, String itemCode, int InvoiceItemId, int quantity, Connection conn) {
+		try {
+			// add the quantity to the existing quantity
+			String sql = "UPDATE InvoiceItem SET quantity = quantity + ? WHERE InvoiceItemId = ?";
+			PreparedStatement ps = conn.prepareStatement(sql);
+			ps.setInt(1, quantity);
+			ps.setInt(2, InvoiceItemId);
+			ps.executeUpdate();
+			
+			//get that item
+			Product product = SearchInDatabase.getInvoiceProduct(invoiceCode, itemCode, conn);
+
+			//update the taxes and total price
+			double taxes = product.getTaxes();
+			double totalPrice = product.getPrice();
+			sql = "UPDATE InvoiceItem SET itemTaxes = ?, itemPrice = ? WHERE InvoiceItemId = ?";
+			ps = conn.prepareStatement(sql);
+			ps.setDouble(1, taxes);
+			ps.setDouble(2, totalPrice);
+			ps.setInt(3, InvoiceItemId);
+			ps.executeUpdate();
+
+		} catch (SQLException e) {
+			log.error("Error updating product in invoice", e);
+		}
 	}
 
 	/**
@@ -370,6 +426,7 @@ public class InvoiceData {
 	public static void addProductToInvoice(String invoiceCode, String itemCode, int quantity) {
 		Product product = null;
 		try (Connection conn = ConnectionFactory.getConnection()) {
+			// cannot add products to non-existent invoices
 			int invoiceId = SearchInDatabase.getInvoiceId(invoiceCode, conn);
 			if (invoiceId == -1) {
 				log.error("Invoice details not available");
@@ -377,7 +434,9 @@ public class InvoiceData {
 			}
 			int invoiceItemId = SearchInDatabase.getInvoiceItemId(invoiceId, itemCode, conn);
 			if (invoiceItemId != -1) {
-				log.error("Product already exists in invoice");
+				// we have to prevent duplicate entries of same item in the InvoiceItem table
+				updateProductInInvoice(invoiceCode, itemCode, invoiceItemId, quantity, conn);
+
 			} else {
 				int itemId = SearchInDatabase.getItemId(itemCode, conn);
 				if (itemId == -1) {
