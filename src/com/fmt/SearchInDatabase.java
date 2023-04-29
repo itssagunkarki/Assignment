@@ -246,6 +246,29 @@ public class SearchInDatabase {
 		return product;
 	}
 
+	public static Product getInvoiceProduct(String invoiceCode, String invoiceItemCode, Connection conn){
+		Product product = getProduct(invoiceItemCode, conn);
+		try {
+			String sql = "select ii.quantity from InvoiceItem as ii\n" +
+					"left join Invoice as i on ii.invoiceId = i.invoiceId\n" +
+					"left join Item as it on ii.itemId = it.itemId\n" +
+					"where i.invoiceCode = ? and it.itemCode = ?";
+			PreparedStatement ps = conn.prepareStatement(sql);
+			ps.setString(1, invoiceCode);
+			ps.setString(2, invoiceItemCode);
+			ResultSet rs = ps.executeQuery();
+			if (rs.next() == false) {
+				return null;
+			} else {
+				Double quantity = rs.getDouble("quantity");
+				product = new Product(product, quantity);
+			}
+		} catch (SQLException e) {
+			log.error("Error searching for product in invoice", e);
+		}
+		return product;
+	}
+
 	public static Equipment getEquipment(String itemCode, Connection conn){
 		Equipment equipment = null;
 		try {
@@ -343,4 +366,9 @@ public class SearchInDatabase {
 		}
 		return invoiceItemId;
     }
+
+
+	public static Item getItem(String itemCode, Connection conn) {
+		return null;
+	}
 }
