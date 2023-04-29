@@ -12,13 +12,13 @@ drop table if exists Country;
 
 create table Country (
     countryId int not null primary key auto_increment,
-    countryName varchar(255) not null,
+    countryName varchar(255),
     countryCode varchar(4) not null
 );
 
 create table State (
     stateId int not null primary key auto_increment,
-    stateName varchar(255) not null,
+    stateName varchar(255),
     stateCode varchar(4) not null,
     countryId int not null,
     foreign key (countryId) references Country(countryId)
@@ -37,7 +37,7 @@ create table Address(
 
 create table Person (
     personId int not null primary key auto_increment,
-    personCode varchar(10) not null unique,
+    personCode varchar(32) not null unique,
     lastName varchar(255) not null,
     firstName varchar(255) not null,
     addressId int not null,
@@ -57,7 +57,7 @@ create table Email (
 
 create table Store(
     storeId int not null primary key auto_increment,
-    storeCode varchar(10) not null unique,
+    storeCode varchar(32) not null unique,
     managerId int not null,
     addressId int not null,
     deleted boolean not null default false,
@@ -68,7 +68,7 @@ create table Store(
 
 create table Item (
     itemId int not null primary key auto_increment,
-    itemCode varchar(10) not null unique,
+    itemCode varchar(32) not null unique,
     itemType char not null,
     itemName varchar(255) not null,
     model varchar(255) null,
@@ -83,7 +83,7 @@ create table Item (
 
 create table Invoice (
     invoiceId int not null primary key auto_increment,
-    invoiceCode varchar(10) not null unique,
+    invoiceCode varchar(32) not null unique,
     storeId int not null,
     customerId int not null,
     salesPersonId int not null,
@@ -99,7 +99,6 @@ create table InvoiceItem (
     invoiceItemId int not null primary key auto_increment,
     invoiceId int not null,
     itemId int not null,
-    itemType char not null,
     itemPrice double not null,
     itemTaxes double not null,
     leaseOrPurchase char null,
@@ -115,11 +114,10 @@ create table InvoiceItem (
 );
 
 
---- Inserting data 
+-- Inserting data 
 
 insert into Country (countryName, countryCode)
-values 
-    ('United States', 'US');
+values ('United States', 'US');
 
 insert into State (stateName, stateCode, countryId)
 values 
@@ -214,22 +212,22 @@ insert into Invoice (invoiceCode, storeId, customerId, salesPersonId, invoiceDat
 ('INV006', 1, 2, 6, '2023-03-15');
 
 
-insert into InvoiceItem (invoiceId, itemid, itemType, itemPrice, itemTaxes, leaseOrPurchase, leasePriceMonthly, leaseStartDate, leaseEndDate) values
-(3, 1,"E", 42700.000, 500.000, 'L', 3500,'2022-01-01', '2022-12-31');
+insert into InvoiceItem (invoiceId, itemid, itemPrice, itemTaxes, leaseOrPurchase, leasePriceMonthly, leaseStartDate, leaseEndDate) values
+(3, 1, 42700.000, 500.000, 'L', 3500,'2022-01-01', '2022-12-31');
 
-insert into InvoiceItem (invoiceId, itemid, itemType, itemPrice, itemTaxes, leaseOrPurchase, purchasePrice) values 
-(1, 2, "E", 85000.000, 0.000, 'P', 85000);
-
-
-insert into InvoiceItem (invoiceId, itemid, itemType, itemPrice, itemTaxes, quantity) values 
-(2, 8,"P", 51.250, 3.660, 1.025),
-(2, 9,"P", 4400.000, 314.600, 550),
-(3, 9,"P", 1264.000, 90.380, 158),
-(4, 8,"P", 150.000, 10.730, 3);
+insert into InvoiceItem (invoiceId, itemid, itemPrice, itemTaxes, leaseOrPurchase, purchasePrice) values 
+(1, 2, 85000.000, 0.000, 'P', 85000);
 
 
-insert into InvoiceItem (invoiceId, itemid, itemType, itemPrice, itemTaxes, numHours) values
-(1, 13, "S", 87.500, 3.020, 3.5),
-(2, 12, "S", 2000.000, 69.000, 2),
-(4, 12,"S", 10000.000, 345.000, 10),
-(4, 14,"S", 1127.500, 38.900, 5);
+insert into InvoiceItem (invoiceId, itemid, itemPrice, itemTaxes, quantity) values 
+(2, 8, 51.250, 3.660, 1.025),
+(2, 9, 4400.000, 314.600, 550),
+(3, 9, 1264.000, 90.380, 158),
+(4, 8, 150.000, 10.730, 3);
+
+
+insert into InvoiceItem (invoiceId, itemid, itemPrice, itemTaxes, numHours) values
+(1, 13, 87.500, 3.020, 3.5),
+(2, 12, 2000.000, 69.000, 2),
+(4, 12, 10000.000, 345.000, 10),
+(4, 14, 1127.500, 38.900, 5);

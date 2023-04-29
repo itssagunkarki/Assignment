@@ -87,7 +87,7 @@ public class DataLoader {
 					+ "left join Address as a on s.addressId = a.addressId\n"
 					+ "left join State as st on st.stateId = a.stateId\n"
 					+ "left join Country as c on c.countryId = st.countryId\n"
-					+ "left join Person as p on p.personId = s.storeId";
+					+ "left join Person as p on p.personId = s.managerId";
 			PreparedStatement ps = conn.prepareStatement(query);
 
 			ResultSet rs = ps.executeQuery();
