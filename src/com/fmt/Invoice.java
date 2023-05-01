@@ -127,11 +127,10 @@ public class Invoice {
 						LeaseEquipment leaseEquipment = (LeaseEquipment) equipment;
 
 						System.out.printf(
-								"%s				(lease) %s %s				\n \t\t 365(%s -> %s)   @$%.2f / %d days\n"
+								"%s				(lease) %s %s				\n \t\t %d days (%s -> %s)   @$%.2f / 30 days\n"
 										+ "									$%-70.2f\n",
-								leaseEquipment.getItemCode(), leaseEquipment.getItemName(), leaseEquipment.getModel(),
-								leaseEquipment.getStartDate().toString(), leaseEquipment.getEndDate().toString(), 
-								leaseEquipment.getLeasePrice(), leaseEquipment.getLeaseLength(), leaseEquipment.getPrice());
+								leaseEquipment.getItemCode(), leaseEquipment.getItemName(), leaseEquipment.getModel(), leaseEquipment.getLeaseLength(), leaseEquipment.getStartDate().toString(), leaseEquipment.getEndDate().toString(), 
+								leaseEquipment.getLeasePrice(),  leaseEquipment.getPrice());
 
 					}
 				} else if (items.get(i).getItemType().equals("P")) {
