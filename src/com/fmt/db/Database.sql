@@ -37,7 +37,7 @@ create table Address(
 
 create table Person (
     personId int not null primary key auto_increment,
-    personCode varchar(32) not null unique,
+    personCode varchar(255) not null unique,
     lastName varchar(255) not null,
     firstName varchar(255) not null,
     addressId int not null,
@@ -57,7 +57,7 @@ create table Email (
 
 create table Store(
     storeId int not null primary key auto_increment,
-    storeCode varchar(32) not null unique,
+    storeCode varchar(255) not null unique,
     managerId int not null,
     addressId int not null,
     deleted boolean not null default false,
@@ -68,7 +68,7 @@ create table Store(
 
 create table Item (
     itemId int not null primary key auto_increment,
-    itemCode varchar(32) not null unique,
+    itemCode varchar(255) not null unique,
     itemType char not null,
     itemName varchar(255) not null,
     model varchar(255) null,
@@ -83,11 +83,11 @@ create table Item (
 
 create table Invoice (
     invoiceId int not null primary key auto_increment,
-    invoiceCode varchar(32) not null unique,
+    invoiceCode varchar(255) not null unique,
     storeId int not null,
     customerId int not null,
     salesPersonId int not null,
-    invoiceDate varchar(32) not null,
+    invoiceDate varchar(255) not null,
     deleted boolean not null default false,
     foreign key (storeId) references Store(storeId),
     foreign key (customerId) references Person(personId),
@@ -103,8 +103,8 @@ create table InvoiceItem (
     itemTaxes double not null,
     leaseOrPurchase char null,
     leasePriceMonthly int  null,
-    leaseStartDate varchar(32) null,
-    leaseEndDate varchar(32) null,
+    leaseStartDate varchar(255) null,
+    leaseEndDate varchar(255) null,
     purchasePrice double null,
     quantity int null,
     numHours double null,
