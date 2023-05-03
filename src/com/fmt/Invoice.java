@@ -1,6 +1,7 @@
 package com.fmt;
 
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
 
 public class Invoice {
@@ -154,4 +155,49 @@ public class Invoice {
 			getInvoiceReportFooter(0.0, 0.0, 0.0);
 		}
 	}
+
+	@Override
+	public String toString(){
+		return "Invoice [invoiceCode=" + invoiceCode + "]";
+	}
+
+	public static Comparator<Invoice> customerComparator = new Comparator<Invoice>() {
+		/**
+		 * compare two invoices by customer name(last name and first name in ascending order) and total invoice price
+		 */
+		@Override
+		public int compare(Invoice o1, Invoice o2) {
+			int result = o1.getCustomer().getName().compareTo(o2.getCustomer().getName());
+			if (result == 0) {
+				result = o1.getTotalInvoicePrice().compareTo(o2.getTotalInvoicePrice());
+			}
+			
+			return result;
+		}
+	};
+
+	public static Comparator<Invoice> invoiceTotalComparator = new Comparator<Invoice>() {
+		/**
+		 * compare two invoices by total invoice price (descending order)
+		 */
+		@Override
+		public int compare(Invoice o1, Invoice o2) {
+			
+			return o2.getTotalInvoicePrice().compareTo(o1.getTotalInvoicePrice());
+		}
+	};
+
+	public static Comparator<Invoice> salesByStoreComparator = new Comparator<Invoice>() {
+		/**
+		 * compare two invoices by total invoice price 
+		 */
+		@Override
+		public int compare(Invoice o1, Invoice o2) {
+			int result = o1.getStore().getStoreCode().compareTo(o2.getStore().getStoreCode());
+			if (result == 0) {
+				result = o1.getTotalInvoicePrice().compareTo(o2.getTotalInvoicePrice());
+			}
+			return result;
+		}
+	};
 }
