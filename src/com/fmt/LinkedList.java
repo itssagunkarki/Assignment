@@ -3,6 +3,7 @@ package com.fmt;
 
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 
 
@@ -16,9 +17,11 @@ public class LinkedList<T> implements Iterable<T>{
     
     private LinkedListNode<T> head;
     private final Comparator<T> comparator;
+    private int size;
 
 	public LinkedList(Comparator<T> comparator) {
         this.comparator = (Comparator<T>) comparator;
+        this.size = 0;
     }
 
 
@@ -50,6 +53,7 @@ public class LinkedList<T> implements Iterable<T>{
                 }
             }
         }
+        size++;
     }
 
     /**
@@ -75,6 +79,9 @@ public class LinkedList<T> implements Iterable<T>{
         }
     }
 
+    
+
+
     public boolean contains(T i) {
         return find(i) != null;
     }
@@ -94,17 +101,10 @@ public class LinkedList<T> implements Iterable<T>{
             LinkedListNode<T> current = previous.getNext();
             previous.setNext(current.getNext());
         }
+        size--;
     }
 
-    
-
     public int getSize(){
-        int size = 0;
-        LinkedListNode<T> current = head;
-        while (current != null) {
-            size++;
-            current = current.getNext();
-        }
         return size;
     }
 
@@ -119,39 +119,40 @@ public class LinkedList<T> implements Iterable<T>{
     }
 
  
-    
-    
-
-    
     @Override
     public Iterator<T> iterator() {
-
-        Iterator<T> iterator = new Iterator<T>() {
+        return new Iterator<T>() {
+            private LinkedListNode<T> current = head;
+            private LinkedListNode<T> previous = null;
             
-                @Override
-                public boolean hasNext() {
-                    return head != null;
+            @Override
+            public boolean hasNext() {
+                return current != null;
+            }
+    
+            @Override
+            public T next() {
+                if (!hasNext()) {
+                    throw new NoSuchElementException();
                 }
-            
-                @Override
-                public T next() {
-                    T data = head.getData();
-                    head = head.getNext();
-                    return data;
+                T data = current.getData();
+                previous = current;
+                current = current.getNext();
+                return data;
+            }
+    
+            @Override
+            public void remove() {
+                if (previous == null) {
+                    throw new IllegalStateException();
                 }
-
-                @Override
-                public void remove() {
-                    // implement this
-                }
-
-
+                previous.setNext(current.getNext());
+                current = previous;
+                size--;
+            }
         };
-        
-
-        return iterator;
-
     }
+    
 
 
 }

@@ -169,7 +169,8 @@ public class Invoice {
 		public int compare(Invoice o1, Invoice o2) {
 			int result = o1.getCustomer().getName().compareTo(o2.getCustomer().getName());
 			if (result == 0) {
-				result = o1.getTotalInvoicePrice().compareTo(o2.getTotalInvoicePrice());
+				// descending order by total invoice price
+				result = o2.getTotalInvoicePrice().compareTo(o1.getTotalInvoicePrice());
 			}
 			
 			return result;
@@ -195,7 +196,8 @@ public class Invoice {
 		public int compare(Invoice o1, Invoice o2) {
 			int result = o1.getStore().getStoreCode().compareTo(o2.getStore().getStoreCode());
 			if (result == 0) {
-				result = o1.getTotalInvoicePrice().compareTo(o2.getTotalInvoicePrice());
+				// descending order by total invoice price
+				result = o2.getTotalInvoicePrice().compareTo(o1.getTotalInvoicePrice());
 			}
 			return result;
 		}
