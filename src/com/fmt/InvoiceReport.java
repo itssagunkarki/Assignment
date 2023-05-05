@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-
 /**
  * 
  * @author sagunkarki
@@ -48,10 +47,8 @@ public class InvoiceReport {
 		System.out.printf("%60d          $%.2f   $ %.2f\n\n", totalItems, totalTax, totalTotal);
 	}
 
-
 	private static HashMap<String, List<Invoice>> groupInvoicesByStore() {
 		HashMap<String, List<Invoice>> result = new HashMap<String, List<Invoice>>();
-
 
 		for (String i : store.keySet()) {
 
@@ -92,11 +89,10 @@ public class InvoiceReport {
 				totalSalesStore += invoice.getTotalInvoicePrice();
 			}
 			totalSalesAllStores += totalSalesStore;
-			// System.out.printf("| %-10s%-30s%-11d$%10.2f |\n", storeCode, managerName, invoiceList.size(),
-			// 		totalSalesStore);
-			String formattedString = String.format("| %-10s%-30s%-11d$%10.2f |", storeCode, managerName, invoiceList.size(), totalSalesStore);
-			storeManager.get(storeManager.put(storeCode, formattedString));
 
+			String formattedString = String.format("| %-10s%-30s%-11d$%10.2f |", storeCode, managerName,
+					invoiceList.size(), totalSalesStore);
+			storeManager.get(storeManager.put(storeCode, formattedString));
 
 			totalNumSales += invoiceList.size();
 		}
@@ -113,46 +109,6 @@ public class InvoiceReport {
 
 	}
 
-	/**
-	 * fills the invoiceList with invoices from the hashmap of invoices which we get from database
-	 * 
-	 * @param <T>
-	 * @param invoiceList
-	 * @return
-	 */
-	private static <T> LinkedList<Invoice> fillInvoicesList(LinkedList<Invoice> invoiceList){
-		HashMap<String, Invoice> invoices = DataLoader.loadInvoice();
-		
-		// create a linkedlist from the invoices of hashmap
-		for (String s : invoices.keySet()) {
-			invoiceList.add(invoices.get(s));
-		}
-		return invoiceList;
-	}
-	
-	/**
-	 * prints the sales report
-	 * 
-	 * @param <T>
-	 * @param invoiceList
-	 * @param salesBy
-	 */
-	private static void printSalesReport(LinkedList<Invoice> invoiceList, String salesBy){
-		System.out.println("+------------------------------------------------------------------------------------+");
-		System.out.printf("| %-82s |\n", String.format("Sales by %s", salesBy));
-
-		System.out.println("+------------------------------------------------------------------------------------+");
-		System.out.printf(" %-10s %-10s %-20s %-20s %10s \n", "Sale", "Store", "Customer", "Salesperson", "Total");
-		
-		
-		for (Invoice i : invoiceList) {
-			// invoiceCode, storeCode, customerCode, salesPersonCode, total
-			System.out.printf(" %-10s %-10s %-20s %-25s $%10.2f \n", i.getInvoiceCode(), i.getStore().getStoreCode(), i.getCustomer().getName(), i.getSalesPerson().getName(), i.getTotalInvoicePrice());
-		}
-		// System.out.println("+------------------------------------------------------------------------------------+");
-		
-	}
-	
 	public static void getReportPerInvoice() {
 		HashMap<String, Invoice> invoices = DataLoader.loadInvoice();
 		for (String s : invoices.keySet()) {
@@ -160,31 +116,67 @@ public class InvoiceReport {
 		}
 	}
 
-	public static void getReportByCustomer(){
-		LinkedList<Invoice> invoiceList = new LinkedList<Invoice>(Invoice.customerComparator);
+	/**
+	 * fills the instance of {@link MyLinkedList} with invoices from the hashmap of invoices
+	 * which we get from {@link DataLoader#loadInvoice()}
+	 * 
+	 * @param <T>         Any
+	 * @param invoiceList
+	 * @return invoiceList
+	 */
+	private static <T> MyLinkedList<Invoice> fillInvoicesList(MyLinkedList<Invoice> invoiceList) {
+		HashMap<String, Invoice> invoices = DataLoader.loadInvoice();
+
+		for (String s : invoices.keySet()) {
+			invoiceList.add(invoices.get(s));
+		}
+		return invoiceList;
+	}
+
+	/**
+	 * A generic method to print the sales report by any given parameter
+	 * 
+	 * @param <T>         Any
+	 * @param invoiceList
+	 * @param salesBy
+	 * 
+	 */
+	private static void printSalesReport(MyLinkedList<Invoice> invoiceList, String salesBy) {
+		System.out.println("+------------------------------------------------------------------------------------+");
+		System.out.printf("| %-82s |\n", String.format("Sales by %s", salesBy));
+
+		System.out.println("+------------------------------------------------------------------------------------+");
+		System.out.printf(" %-10s %-10s %-20s %-20s %10s \n", "Sale", "Store", "Customer", "Salesperson", "Total");
+
+		for (Invoice i : invoiceList) {
+			System.out.printf(" %-10s %-10s %-20s %-25s $%10.2f \n", i.getInvoiceCode(), i.getStore().getStoreCode(),
+					i.getCustomer().getName(), i.getSalesPerson().getName(), i.getTotalInvoicePrice());
+		}
+	}
+
+	public static void getReportByCustomer() {
+		MyLinkedList<Invoice> invoiceList = new MyLinkedList<Invoice>(Invoice.customerComparator);
 		invoiceList = fillInvoicesList(invoiceList);
 		printSalesReport(invoiceList, "Customer");
-	}	
+	}
 
-	public static void getReportByInvoiceTotal(){
-		LinkedList<Invoice> invoiceList = new LinkedList<Invoice>(Invoice.invoiceTotalComparator);
+	public static void getReportByInvoiceTotal() {
+		MyLinkedList<Invoice> invoiceList = new MyLinkedList<Invoice>(Invoice.invoiceTotalComparator);
 		invoiceList = fillInvoicesList(invoiceList);
 		printSalesReport(invoiceList, "Total");
 	}
-	public static void getReportByStore(){
-		LinkedList<Invoice> invoiceList = new LinkedList<Invoice>(Invoice.salesByStoreComparator);
+
+	public static void getReportByStore() {
+		MyLinkedList<Invoice> invoiceList = new MyLinkedList<Invoice>(Invoice.salesByStoreComparator);
 		invoiceList = fillInvoicesList(invoiceList);
 		printSalesReport(invoiceList, "Store");
 	}
-
-
 
 	public static void main(String[] args) {
 
 		getReportByCustomer();
 		getReportByInvoiceTotal();
 		getReportByStore();
-
 
 	}
 
