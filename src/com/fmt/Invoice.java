@@ -1,6 +1,7 @@
 package com.fmt;
 
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
 
 public class Invoice {
@@ -127,11 +128,10 @@ public class Invoice {
 						LeaseEquipment leaseEquipment = (LeaseEquipment) equipment;
 
 						System.out.printf(
-								"%s				(lease) %s %s				\n \t\t 365(%s -> %s)   @$%.2f / %d days\n"
+								"%s				(lease) %s %s				\n \t\t %d days (%s -> %s)   @$%.2f / 30 days\n"
 										+ "									$%-70.2f\n",
-								leaseEquipment.getItemCode(), leaseEquipment.getItemName(), leaseEquipment.getModel(),
-								leaseEquipment.getStartDate().toString(), leaseEquipment.getEndDate().toString(), 
-								leaseEquipment.getLeasePrice(), leaseEquipment.getLeaseLength(), leaseEquipment.getPrice());
+								leaseEquipment.getItemCode(), leaseEquipment.getItemName(), leaseEquipment.getModel(), leaseEquipment.getLeaseLength(), leaseEquipment.getStartDate().toString(), leaseEquipment.getEndDate().toString(), 
+								leaseEquipment.getLeasePrice(),  leaseEquipment.getPrice());
 
 					}
 				} else if (items.get(i).getItemType().equals("P")) {
@@ -155,4 +155,51 @@ public class Invoice {
 			getInvoiceReportFooter(0.0, 0.0, 0.0);
 		}
 	}
+
+	@Override
+	public String toString(){
+		return "Invoice [invoiceCode=" + invoiceCode + "]";
+	}
+
+	public static Comparator<Invoice> customerComparator = new Comparator<Invoice>() {
+		/**
+		 * compare two invoices by customer name(last name and first name in ascending order) and total invoice price
+		 */
+		@Override
+		public int compare(Invoice o1, Invoice o2) {
+			int result = o1.getCustomer().getName().compareTo(o2.getCustomer().getName());
+			if (result == 0) {
+				// descending order by total invoice price
+				result = o2.getTotalInvoicePrice().compareTo(o1.getTotalInvoicePrice());
+			}
+			
+			return result;
+		}
+	};
+
+	public static Comparator<Invoice> invoiceTotalComparator = new Comparator<Invoice>() {
+		/**
+		 * compare two invoices by total invoice price (descending order)
+		 */
+		@Override
+		public int compare(Invoice o1, Invoice o2) {
+			
+			return o2.getTotalInvoicePrice().compareTo(o1.getTotalInvoicePrice());
+		}
+	};
+
+	public static Comparator<Invoice> salesByStoreComparator = new Comparator<Invoice>() {
+		/**
+		 * compare two invoices by total invoice price 
+		 */
+		@Override
+		public int compare(Invoice o1, Invoice o2) {
+			int result = o1.getStore().getStoreCode().compareTo(o2.getStore().getStoreCode());
+			if (result == 0) {
+				// descending order by total invoice price
+				result = o2.getTotalInvoicePrice().compareTo(o1.getTotalInvoicePrice());
+			}
+			return result;
+		}
+	};
 }

@@ -16,3 +16,4 @@ Version| Build info|Date
 1.3|Added initial database design and implemented database|03-31-2023
 1.4|Updated Dataloader to load data from database|04-14-2023
 1.5|Added InvoiceData class to add/update data in database|04-28-2023
+1.6|Implemented a linked-list based ADT and generated sales reports|05-05-2023
